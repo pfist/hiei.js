@@ -1,0 +1,23 @@
+{
+  "name": "hiei.js",
+  "version": "0.0.0",
+  "description": "A tiny framework for building simple, modern bots with discord.js",
+  "keywords": [
+    "discord",
+    "discord.js",
+    "bot",
+    "framework",
+    "slash commands",
+    "interactions"
+  ],
+  "author": "Nick Pfisterer <nick@polymoon.net> (https://polymoon.net)",
+  "type": "module",
+  "main": "hiei.js",
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "scripts": {
+    "test": "cd test && node bot"
+  },
+  "devDependencies": {}
+}
