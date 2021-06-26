@@ -17,7 +17,11 @@
     "node": ">=14.0.0"
   },
   "scripts": {
+    "lint": "standard | snazzy",
     "test": "cd test && node bot"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "snazzy": "^9.0.0",
+    "standard": "^16.0.3"
+  }
 }
