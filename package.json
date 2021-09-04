@@ -14,7 +14,7 @@
   "type": "module",
   "main": "hiei.js",
   "engines": {
-    "node": ">=14.0.0"
+    "node": ">=16.6.0"
   },
   "scripts": {
     "lint": "standard | snazzy",
