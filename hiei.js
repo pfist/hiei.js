@@ -1,4 +1,4 @@
-export * as Client from './lib/HieiClient'
+export * as HieiClient from './lib/HieiClient'
 export * as Listener from './lib/Listener'
 export * as ListenerHandler from './lib/ListenerHandler'
 export * as SlashCommand from './lib/SlashCommand'
