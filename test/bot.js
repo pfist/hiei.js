@@ -1,9 +1,10 @@
-import HieiClient from '../hiei.js'
+import { HieiClient } from '../hiei.js'
+import { Intents } from 'discord.js'
 
 const client = new HieiClient({
   options: {
     allowedMentions: [],
-    intents: []
+    intents: [Intents.FLAGS.GUILDS]
   }
 })
 
