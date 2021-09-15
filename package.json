@@ -18,9 +18,10 @@
   },
   "scripts": {
     "lint": "standard | snazzy",
-    "test": "cd test && node bot"
+    "test": "cd test && node -r dotenv/config bot"
   },
   "devDependencies": {
+    "dotenv": "^10.0.0",
     "snazzy": "^9.0.0",
     "standard": "^16.0.3"
   }
