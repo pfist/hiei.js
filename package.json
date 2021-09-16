@@ -1,7 +1,7 @@
 {
   "name": "hiei.js",
   "version": "0.0.0",
-  "description": "A tiny framework for building bots with discord.js",
+  "description": "A tiny bot framework for discord.js",
   "keywords": [
     "discord",
     "discord.js",

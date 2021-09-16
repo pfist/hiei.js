@@ -1,2 +1,2 @@
 # hiei
-A tiny framework for building bots with discord.js
+A tiny bot framework for discord.js
