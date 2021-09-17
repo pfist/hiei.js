@@ -1,4 +1,4 @@
-import { SlashCommand } from '../../hiei.js'
+import { SlashCommand } from '../../../hiei.js'
 
 class Version extends SlashCommand {
   constructor () {
