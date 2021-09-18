@@ -4,7 +4,7 @@ import { Intents } from 'discord.js'
 const client = new HieiClient({
   options: {
     allowedMentions: [],
-    intents: [Intents.FLAGS.GUILDS]
+    intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES]
   }
 })
 
