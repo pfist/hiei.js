@@ -9,7 +9,7 @@ class Ping extends SlashCommand {
   }
 
   async run (interaction) {
-    await interaction.reply(':ping_pong: Pong!')
+    await interaction.reply({ content: ':ping_pong: Pong!' })
   }
 }
 
