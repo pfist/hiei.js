@@ -3,7 +3,15 @@ import { MessageCommand } from '../../../hiei.js'
 class Reverse extends MessageCommand {
   constructor () {
     super({
-      name: 'reverse'
+      name: 'reverse',
+      defaultPermission: false,
+      permissions: [
+        {
+          id: '893313652126519316',
+          type: 'ROLE',
+          permission: true
+        }
+      ]
     })
   }
 
