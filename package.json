@@ -12,7 +12,11 @@
   ],
   "author": "Nick Pfisterer <nick@polymoon.net> (https://polymoon.net)",
   "type": "module",
+  "main": "./hiei.js",
   "exports": "./hiei.js",
+  "files": [
+    "lib"
+  ],
   "engines": {
     "node": ">=16.6.0"
   },
