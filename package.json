@@ -22,7 +22,8 @@
   },
   "scripts": {
     "lint": "standard | snazzy",
-    "dev": "cd test && node -r dotenv/config bot"
+    "dev": "cd test && node -r dotenv/config bot",
+    "test": "echo \"No test specified\""
   },
   "devDependencies": {
     "dotenv": "^10.0.0",
