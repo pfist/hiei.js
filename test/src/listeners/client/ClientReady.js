@@ -1,4 +1,4 @@
-import { Listener } from '../../../hiei.js'
+import { Listener } from '../../../../hiei.js'
 
 class ClientReady extends Listener {
   constructor () {

@@ -1,4 +1,4 @@
-import { MessageCommand } from '../../../hiei.js'
+import { MessageCommand } from '../../../../hiei.js'
 
 class Reverse extends MessageCommand {
   constructor () {

@@ -1,4 +1,4 @@
-import { SlashCommand } from '../../../hiei.js'
+import { SlashCommand } from '../../../../hiei.js'
 
 class Ping extends SlashCommand {
   constructor () {

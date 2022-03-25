@@ -1,4 +1,4 @@
-import { UserCommand } from '../../../hiei.js'
+import { UserCommand } from '../../../../hiei.js'
 
 class About extends UserCommand {
   constructor () {
