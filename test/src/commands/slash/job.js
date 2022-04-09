@@ -32,7 +32,7 @@ class Job extends SlashCommand {
 
     const qualificationsInput = new TextInputBuilder()
       .setCustomId('qualifications')
-      .setLabel('Qualifcations')
+      .setLabel('Qualifications')
       .setStyle(TextInputStyle.Paragraph)
 
     const applyInput = new TextInputBuilder()
