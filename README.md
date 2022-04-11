@@ -1,7 +1,7 @@
 # hiei
 A tiny bot framework for discord.js
 
-> ⚠️Hiei is in beta. It's currently in active development and is subject to change significantly. Proceed with caution!
+> ⚠️Hiei is under active development and may change significantly at any time. Proceed with caution!
 
 ## Features
 - Fully embraces interactions (no legacy command support!)
@@ -12,10 +12,10 @@ A tiny bot framework for discord.js
 - Zero dependencies
 
 ## Installation
-Hiei requires Node 16.6.0 and discord.js 13.
+Hiei requires Node 16.9.0 and discord.js 14.
 
 ```
-npm install discord.js
+npm install discord.js@dev
 npm install hiei.js
 ```
 
