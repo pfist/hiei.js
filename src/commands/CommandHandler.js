@@ -37,7 +37,7 @@ class CommandHandler extends EventEmitter {
           name: cmd.name,
           description: cmd.description,
           options: cmd.options.map(o => {
-            if (!o.required) {
+            if (!o.required && o.type !== 1) {
               o.required = false
             }
 
