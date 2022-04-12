@@ -1,15 +1,16 @@
 import { SlashCommand } from '../../../../hiei.js'
+import { ApplicationCommandPermissionType } from 'discord.js'
 
 class Ping extends SlashCommand {
   constructor () {
     super({
       name: 'ping',
-      description: 'Ping the bot',
+      description: 'Play ping pong with the bot',
       defaultPermission: false,
       permissions: [
         {
           id: '84183781501571072',
-          type: 'USER',
+          type: ApplicationCommandPermissionType.User,
           permission: true
         }
       ]

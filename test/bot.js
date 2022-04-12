@@ -1,9 +1,12 @@
 import { HieiClient } from '../hiei.js'
-import { Intents } from 'discord.js'
+import { GatewayIntentBits } from 'discord.js'
 
 const client = new HieiClient({
   allowedMentions: [],
-  intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES]
+  intents: [
+    GatewayIntentBits.Guilds,
+    GatewayIntentBits.GuildMessages
+  ]
 })
 
 client.login(process.env.TOKEN)

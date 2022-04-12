@@ -1,6 +1,8 @@
-class MessageCommand {
-  /** An application command invoked directly on a message from the context menu.
-   * @param {string} name - The name of this message command. (1-32 characters)
+import { ApplicationCommandType } from 'discord.js'
+
+class UserCommand {
+  /** An application command invoked directly on a user from the context menu.
+   * @param {string} name - The name of this user command. (1-32 characters)
    * @param {boolean} defaultPermission - Whether the command is enabled by default when registered.
    * @param {Array} permissions - Permission overrides for this slash command, if any. (optional)
    */
@@ -10,7 +12,7 @@ class MessageCommand {
     this.defaultPermission = defaultPermission
     this.permissions = permissions
     this.options = options
-    this.type = 'MESSAGE'
+    this.type = ApplicationCommandType.User
   }
 
   run () {
@@ -18,4 +20,4 @@ class MessageCommand {
   }
 }
 
-export default MessageCommand
+export default UserCommand

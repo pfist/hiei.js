@@ -1,4 +1,5 @@
 import { MessageCommand } from '../../../../hiei.js'
+import { ApplicationCommandPermissionType } from 'discord.js'
 
 class Reverse extends MessageCommand {
   constructor () {
@@ -8,7 +9,7 @@ class Reverse extends MessageCommand {
       permissions: [
         {
           id: '893313652126519316',
-          type: 'ROLE',
+          type: ApplicationCommandPermissionType.Role,
           permission: true
         }
       ]
