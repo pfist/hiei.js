@@ -58,6 +58,9 @@ class CommandHandler extends EventEmitter {
         }
       }), 'name')
 
+      // Uncomment this line to debug command sync
+      // console.log(`Local: ${JSON.stringify(localCommands, null, '\t')}\n\nGuild: ${JSON.stringify(remoteCommands, null, '\t')}`)
+
       if (JSON.stringify(localCommands) === JSON.stringify(remoteCommands)) {
         return console.log('No command changes detected. Skipping registration.')
       } else {
