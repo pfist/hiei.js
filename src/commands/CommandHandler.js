@@ -69,7 +69,7 @@ class CommandHandler extends EventEmitter {
     })
 
     this.client.on('interactionCreate', async interaction => {
-      if (!interaction.isCommand() && !interaction.isContextMenu()) return
+      if (!interaction.isCommand()) return
 
       if (interaction.isChatInputCommand()) {
         return this.handleSlashCommand(interaction)
