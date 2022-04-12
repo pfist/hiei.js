@@ -46,7 +46,7 @@ class CommandHandler extends EventEmitter {
         }
       }), 'name')
 
-      const guildCommandData = await this.fetchGuildCommandData()
+      const guildCommandData = await this.fetchGuildCommandData(process.env.GUILD)
       const guildCommands = sortByKey(guildCommandData.map(cmd => {
         return {
           type: cmd.type,
@@ -63,8 +63,8 @@ class CommandHandler extends EventEmitter {
       if (this.isOutdated(localCommands, guildCommands)) {
         return console.log('Commands up to date.')
       } else {
-        await this.updateCommands(localCommands)
-        await this.updatePermissions()
+        await this.updateCommands(localCommands, process.env.GUILD)
+        await this.updatePermissions(process.env.GUILD)
       }
     })
 
@@ -85,8 +85,8 @@ class CommandHandler extends EventEmitter {
     })
   }
 
-  async fetchGuildCommandData () {
-    return await this.client.guilds.cache.get(process.env.GUILD).commands.fetch()
+  async fetchGuildCommandData (guildId) {
+    return await this.client.guilds.cache.get(guildId).commands.fetch()
   }
 
   async handleMessageCommand (interaction, message) {
@@ -123,14 +123,16 @@ class CommandHandler extends EventEmitter {
     return JSON.stringify(localCommandData) === JSON.stringify(guildCommandData)
   }
 
-  async updateCommands (data) {
+  async updateCommands (data, guildId) {
     console.log('Commands out of date. Updating...')
-    await this.client.guilds.cache.get(process.env.GUILD).commands.set(data)
-    return console.log(`${data.length} commands registered.`)
+
+    const guild = this.client.guilds.cache.get(guildId)
+    await guild.commands.set(data)
+    return console.log(`${data.length} commands registered for ${guild.name}.`)
   }
 
-  async updatePermissions () {
-    const commands = await this.fetchGuildCommandData()
+  async updatePermissions (guildId) {
+    const commands = await this.fetchGuildCommandData(guildId)
     const fullPermissions = commands.map(cmd => {
       return {
         id: cmd.id,
@@ -138,7 +140,7 @@ class CommandHandler extends EventEmitter {
       }
     })
 
-    await this.client.guilds.cache.get(process.env.GUILD).commands.permissions.set({ fullPermissions })
+    await this.client.guilds.cache.get(guildId).commands.permissions.set({ fullPermissions })
     console.log('Permissions updated.')
   }
 }
