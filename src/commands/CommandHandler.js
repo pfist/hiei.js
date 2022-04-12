@@ -1,8 +1,7 @@
 import EventEmitter from 'node:events'
 import { pathToFileURL } from 'node:url'
-import { Collection, EmbedBuilder } from 'discord.js'
+import { Collection } from 'discord.js'
 import { getFiles, sortByKey } from '../HieiUtil.js'
-import { channelMention } from '@discordjs/builders'
 
 class CommandHandler extends EventEmitter {
   /** Handles all commands found the commands directory.
