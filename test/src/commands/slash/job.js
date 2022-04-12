@@ -1,5 +1,7 @@
 import { SlashCommand } from '../../../../hiei.js'
-import { ActionRowBuilder, ModalBuilder, TextInputBuilder, TextInputStyle } from 'discord.js'
+import { ActionRowBuilder, EmbedBuilder, ModalBuilder, TextInputBuilder, TextInputStyle } from 'discord.js'
+import { channelMention } from '@discordjs/builders'
+import createModalCollector from '../../utilities/createModalCollector.js'
 
 class Job extends SlashCommand {
   constructor () {
@@ -18,6 +20,7 @@ class Job extends SlashCommand {
     const roleInput = new TextInputBuilder()
       .setCustomId('role')
       .setLabel('Role & company')
+      .setPlaceholder('Technical Artist at Acme Games')
       .setStyle(TextInputStyle.Short)
 
     const locationInput = new TextInputBuilder()
@@ -49,6 +52,32 @@ class Job extends SlashCommand {
     questions.addComponents(firstRow, secondRow, thirdRow, fourthRow, fifthRow)
 
     await interaction.showModal(questions)
+
+    const collector = createModalCollector(this.client, interaction)
+
+    collector.on('collect', async i => {
+      if (i.customId === 'jobModal') {
+        const submitter = i.user
+        const role = i.fields.getTextInputValue('role')
+        const location = i.fields.getTextInputValue('location')
+        const responsibilities = i.fields.getTextInputValue('responsibilities')
+        const qualificiations = i.fields.getTextInputValue('qualifications')
+        const apply = i.fields.getTextInputValue('apply')
+        const channel = i.guild.channels.cache.get('962242384807227464')
+        const jobPost = new EmbedBuilder()
+          .setTitle(role)
+          .addFields(
+            { name: 'Location', value: location },
+            { name: 'Responsibilities', value: responsibilities },
+            { name: 'Qualifications', value: qualificiations },
+            { name: 'How to Apply', value: apply }
+          )
+          .setTimestamp()
+
+        await channel.send({ content: `Posted by <@${submitter.id}>`, embeds: [jobPost] })
+        return i.reply({ content: `Your job opportunity was successfully submitted to ${channelMention('962242384807227464')}`, ephemeral: true })
+      }
+    })
   }
 }
 

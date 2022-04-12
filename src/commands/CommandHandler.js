@@ -83,40 +83,6 @@ class CommandHandler extends EventEmitter {
       if (interaction.isUserContextMenuCommand()) {
         return this.handleUserCommand(interaction, interaction.options.getUser('user'))
       }
-
-      if (interaction.isModalSubmit()) {
-        if (interaction.customId === 'surveyModal') {
-          const submitter = interaction.user
-          const color = interaction.fields.getTextInputValue('favoriteColorInput')
-          const hobbies = interaction.fields.getTextInputValue('hobbiesInput')
-          const channel = interaction.guild.channels.cache.get('962215455840419870')
-
-          await channel.send({ content: `Survey submitted by ${submitter}:\nFavorite color: ${color}\nHobbies: ${hobbies}` })
-          return interaction.reply({ content: `Your response was submitted to ${channelMention('962215455840419870')}`, ephemeral: true })
-        }
-
-        if (interaction.customId === 'jobModal') {
-          const submitter = interaction.user
-          const role = interaction.fields.getTextInputValue('role')
-          const location = interaction.fields.getTextInputValue('location')
-          const responsibilities = interaction.fields.getTextInputValue('responsibilities')
-          const qualificiations = interaction.fields.getTextInputValue('qualifications')
-          const apply = interaction.fields.getTextInputValue('apply')
-          const channel = interaction.guild.channels.cache.get('962242384807227464')
-          const jobPost = new EmbedBuilder()
-            .setTitle(role)
-            .addFields(
-              { name: 'Location', value: location },
-              { name: 'Responsibilities', value: responsibilities },
-              { name: 'Qualifications', value: qualificiations },
-              { name: 'How to Apply', value: apply }
-            )
-            .setTimestamp()
-
-          await channel.send({ content: `Posted by <@${submitter.id}>`, embeds: [jobPost] })
-          return interaction.reply({ content: `Your job opportunity was successfully submitted to ${channelMention('962242384807227464')}`, ephemeral: true })
-        }
-      }
     })
   }
 
