@@ -1,13 +1,13 @@
 # hiei
 A tiny bot framework for discord.js
 
-> ⚠️Hiei is under active development and may change significantly at any time. Proceed with caution!
+> 🐉 Hiei is under active development and may change significantly at any time. Proceed with caution!
 
 ## Features
-- Fully embraces interactions (no legacy command support!)
+- Fully embrace interactions
 - Modular commands and event listeners
 - Slash, message, and user commands supported
-- Automatic command registration
+- Automatic command sync
 - Simple and lightweight
 - Zero dependencies
 
