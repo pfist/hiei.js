@@ -47,8 +47,8 @@ class CommandHandler extends EventEmitter {
         }
       }), 'name')
 
-      const remoteCommandData = await this.getRemoteCommands()
-      const remoteCommands = sortByKey(remoteCommandData.map(cmd => {
+      const guildCommandData = await this.fetchGuildCommandData()
+      const guildCommands = sortByKey(guildCommandData.map(cmd => {
         return {
           type: cmd.type,
           name: cmd.name,
@@ -61,16 +61,16 @@ class CommandHandler extends EventEmitter {
       // Uncomment this line to debug command sync
       // console.log(`Local: ${JSON.stringify(localCommands, null, '\t')}\n\nGuild: ${JSON.stringify(remoteCommands, null, '\t')}`)
 
-      if (JSON.stringify(localCommands) === JSON.stringify(remoteCommands)) {
-        return console.log('No command changes detected. Skipping registration.')
+      if (this.isOutdated(localCommands, guildCommands)) {
+        return console.log('Commands up to date.')
       } else {
-        this.registerCommands(localCommands)
-        await this.setPermissions()
+        await this.updateCommands(localCommands)
+        await this.updatePermissions()
       }
     })
 
     this.client.on('interactionCreate', async interaction => {
-      // if (!interaction.isCommand() && !interaction.isContextMenu()) return
+      if (!interaction.isCommand() && !interaction.isContextMenu()) return
 
       if (interaction.isChatInputCommand()) {
         return this.handleSlashCommand(interaction)
@@ -84,6 +84,10 @@ class CommandHandler extends EventEmitter {
         return this.handleUserCommand(interaction, interaction.options.getUser('user'))
       }
     })
+  }
+
+  async fetchGuildCommandData () {
+    return await this.client.guilds.cache.get(process.env.GUILD).commands.fetch()
   }
 
   async handleMessageCommand (interaction, message) {
@@ -116,17 +120,18 @@ class CommandHandler extends EventEmitter {
     }
   }
 
-  async getRemoteCommands () {
-    return await this.client.guilds.cache.get(process.env.GUILD)?.commands.fetch()
+  isOutdated (localCommandData, guildCommandData) {
+    return JSON.stringify(localCommandData) === JSON.stringify(guildCommandData)
   }
 
-  async registerCommands (data) {
+  async updateCommands (data) {
+    console.log('Commands out of date. Updating...')
     await this.client.guilds.cache.get(process.env.GUILD).commands.set(data)
     return console.log(`${data.length} commands registered.`)
   }
 
-  async setPermissions () {
-    const commands = await this.getRemoteCommands()
+  async updatePermissions () {
+    const commands = await this.fetchGuildCommandData()
     const fullPermissions = commands.map(cmd => {
       return {
         id: cmd.id,
