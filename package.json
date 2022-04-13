@@ -15,7 +15,7 @@
   "main": "hiei.js",
   "exports": "./hiei.js",
   "files": [
-    "lib"
+    "src"
   ],
   "engines": {
     "node": ">=16.9.0"
