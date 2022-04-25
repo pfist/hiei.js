@@ -1,5 +1,5 @@
 # hiei
-A tiny bot framework for discord.js
+A tiny bot framework for discord.js. Get started quickly with [Jagan](https://github.com/pfist/jagan).
 
 > 🐉 Hiei is under active development and may change significantly at any time. Proceed with caution!
 
