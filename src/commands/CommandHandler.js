@@ -44,7 +44,7 @@ class CommandHandler extends EventEmitter {
       }), 'name')
 
       // Uncomment this line to debug command sync
-      // console.log(`Local: ${JSON.stringify(localCommands, null, '\t')}\n\nGuild: ${JSON.stringify(remoteCommands, null, '\t')}`)
+      // console.log(`Local: ${JSON.stringify(localCommands, null, '\t')}\n\nGuild: ${JSON.stringify(guildCommands, null, '\t')}`)
 
       if (this.isInSync(localCommands, guildCommands)) {
         return console.log('Commands in sync. Keep on keeping on.')
@@ -71,7 +71,9 @@ class CommandHandler extends EventEmitter {
   }
 
   async fetchGuildCommandData (guildId) {
-    return await this.client.guilds.cache.get(guildId).commands.fetch()
+    if (this.client.guilds.cache.some(guild => guild.id === guildId)) return await this.client.guilds.cache.get(guildId).commands.fetch()
+    const guild = this.client.guilds.fetch(guildId)
+    return await guild.commands.fetch()
   }
 
   async handleMessageCommand (interaction, message) {
