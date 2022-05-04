@@ -3,8 +3,7 @@ import { UserCommand } from '../../../../hiei.js'
 class About extends UserCommand {
   constructor () {
     super({
-      name: 'about',
-      defaultPermission: false
+      name: 'about'
     })
   }
 

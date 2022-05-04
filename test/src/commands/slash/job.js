@@ -7,8 +7,7 @@ class Job extends SlashCommand {
   constructor () {
     super({
       name: 'job',
-      description: 'Post a salary job on our job board',
-      defaultPermission: true
+      description: 'Post a salary job on our job board'
     })
   }
 

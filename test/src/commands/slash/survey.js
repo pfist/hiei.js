@@ -7,8 +7,7 @@ class Survey extends SlashCommand {
   constructor () {
     super({
       name: 'survey',
-      description: 'Create a modal survey',
-      defaultPermission: true
+      description: 'Create a modal survey'
     })
   }
 

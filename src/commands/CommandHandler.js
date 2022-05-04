@@ -30,22 +30,7 @@ class CommandHandler extends EventEmitter {
         this.commands.set(c.name, c)
       }
 
-      const localCommands = sortByKey(this.commands.map(cmd => {
-        return {
-          type: cmd.type,
-          name: cmd.name,
-          description: cmd.description,
-          options: cmd.options.map(o => {
-            if (!o.required && o.type !== 1) {
-              o.required = false
-            }
-
-            return o
-          }),
-          defaultPermission: cmd.defaultPermission ? cmd.defaultPermission : true
-        }
-      }), 'name')
-
+      const localCommands = sortByKey(this.commands.map(cmd => cmd.asPayload()), 'name')
       const guildCommandData = await this.fetchGuildCommandData(process.env.GUILD)
       const guildCommands = sortByKey(guildCommandData.map(cmd => {
         return {
@@ -53,18 +38,18 @@ class CommandHandler extends EventEmitter {
           name: cmd.name,
           description: cmd.description,
           options: cmd.options,
-          defaultPermission: cmd.defaultPermission
+          default_member_permissions: cmd.default_member_permissions,
+          dm_permission: cmd.dm_permission
         }
       }), 'name')
 
       // Uncomment this line to debug command sync
       // console.log(`Local: ${JSON.stringify(localCommands, null, '\t')}\n\nGuild: ${JSON.stringify(remoteCommands, null, '\t')}`)
 
-      if (this.isOutdated(localCommands, guildCommands)) {
-        return console.log('Commands up to date.')
+      if (this.isInSync(localCommands, guildCommands)) {
+        return console.log('Commands in sync. Keep on keeping on.')
       } else {
-        await this.updateCommands(localCommands, process.env.GUILD)
-        await this.updatePermissions(process.env.GUILD)
+        await this.syncCommands(localCommands, process.env.GUILD)
       }
     })
 
@@ -119,29 +104,16 @@ class CommandHandler extends EventEmitter {
     }
   }
 
-  isOutdated (localCommandData, guildCommandData) {
+  isInSync (localCommandData, guildCommandData) {
     return JSON.stringify(localCommandData) === JSON.stringify(guildCommandData)
   }
 
-  async updateCommands (data, guildId) {
-    console.log('Commands out of date. Updating...')
+  async syncCommands (data, guildId) {
+    console.log('Commands out of sync. Updating...')
 
     const guild = this.client.guilds.cache.get(guildId)
     await guild.commands.set(data)
     return console.log(`${data.length} commands registered for ${guild.name}.`)
-  }
-
-  async updatePermissions (guildId) {
-    const commands = await this.fetchGuildCommandData(guildId)
-    const fullPermissions = commands.map(cmd => {
-      return {
-        id: cmd.id,
-        permissions: this.commands.get(cmd.name).permissions
-      }
-    })
-
-    await this.client.guilds.cache.get(guildId).commands.permissions.set({ fullPermissions })
-    console.log('Permissions updated.')
   }
 }
 

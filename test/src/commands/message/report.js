@@ -1,6 +1,5 @@
 import { MessageCommand } from '../../../../hiei.js'
 import {
-  ApplicationCommandPermissionType,
   ActionRowBuilder,
   InteractionCollector,
   InteractionType,
@@ -14,15 +13,7 @@ import { channelMention, userMention } from '@discordjs/builders'
 class Report extends MessageCommand {
   constructor () {
     super({
-      name: 'Report to Moderators',
-      defaultPermission: false,
-      permissions: [
-        {
-          id: '893313652126519316',
-          type: ApplicationCommandPermissionType.Role,
-          permission: true
-        }
-      ]
+      name: 'Report to Moderators'
     })
   }
 

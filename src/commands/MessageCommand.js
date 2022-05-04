@@ -3,16 +3,23 @@ import { ApplicationCommandType } from 'discord.js'
 class MessageCommand {
   /** An application command invoked directly on a message from the context menu.
    * @param {string} name - The name of this message command. (1-32 characters)
-   * @param {boolean} defaultPermission - Whether the command is enabled by default when registered.
-   * @param {Array} permissions - Permission overrides for this slash command, if any. (optional)
+   * @param {string} defaultMemberPermissions - The default permissions represented as a bit set.
+   * @param {boolean} dmPermission - Whether the command is available in DMs.
    */
-  constructor ({ name, description = '', defaultPermission, permissions = [], options = [] } = {}) {
-    this.name = name
-    this.description = description
-    this.defaultPermission = defaultPermission
-    this.permissions = permissions
-    this.options = options
+  constructor ({ name, defaultMemberPermissions, dmPermission }) {
     this.type = ApplicationCommandType.Message
+    this.name = name
+    this.defaultMemberPermissions = defaultMemberPermissions ?? 0
+    this.dmPermission = dmPermission ?? false
+  }
+
+  asPayload () {
+    return {
+      type: this.type,
+      name: this.name,
+      default_member_permissions: this.defaultMemberPermissions,
+      dm_permission: this.dmPermission
+    }
   }
 
   run () {
