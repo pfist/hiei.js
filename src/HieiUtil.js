@@ -5,8 +5,8 @@ import path from 'node:path'
  * @param {string} directory - The directory to get files from.
 */
 export async function getFiles (directory) {
-  const all = await fs.readdir(directory)
-  const files = await Promise.all(all.map(async (file) => {
+  const files = await fs.readdir(directory)
+  const validFiles = await Promise.all(files.map(async (file) => {
     const filepath = path.join(directory, file)
     const stats = await fs.stat(filepath)
 
@@ -17,7 +17,7 @@ export async function getFiles (directory) {
     }
   }))
 
-  return files.filter(file => file.length).flat()
+  return validFiles.filter(file => file.length).flat()
 }
 
 /** Sort an array of objects by key in descending order.
