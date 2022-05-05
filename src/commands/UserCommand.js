@@ -2,23 +2,21 @@ import { ApplicationCommandType } from 'discord.js'
 
 class UserCommand {
   /** An application command invoked directly on a user from the context menu.
-   * @param {string} name - The name of this message command. (1-32 characters)
-   * @param {string} defaultMemberPermissions - The default permissions represented as a bit set.
-   * @param {boolean} dmPermission - Whether the command is available in DMs.
+   * @param {string} name - The name of this user command. (1-32 characters)
+   * @param {boolean} defaultPermission - Whether this command is enabled for everyone by default.
    */
-  constructor ({ name, defaultMemberPermissions, dmPermission }) {
+  constructor ({ name, defaultPermission }) {
     this.type = ApplicationCommandType.User
     this.name = name
-    this.defaultMemberPermissions = defaultMemberPermissions ?? 0
-    this.dmPermission = dmPermission ?? false
+    this.defaultPermission = defaultPermission ?? false
   }
 
   asPayload () {
     return {
       type: this.type,
       name: this.name,
-      default_member_permissions: this.defaultMemberPermissions,
-      dm_permission: this.dmPermission
+      description: '',
+      defaultPermission: this.defaultPermission
     }
   }
 

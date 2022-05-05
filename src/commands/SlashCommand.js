@@ -4,17 +4,15 @@ class SlashCommand {
   /** An application command invoked by typing / in a text channel.
    * @param {string} name - The name of this slash command. (1-32 characters)
    * @param {string} description - The description of this slash command. (1-100 characters)
-   * @param {string} defaultMemberPermissions - The default permissions represented as a bit set.
-   * @param {boolean} dmPermission - Whether the command is available in DMs.
+   * @param {boolean} defaultPermission - Whether this command is enabled for everyone by default.
    * @param {Array} options - Options for this command, if any.
    */
-  constructor ({ name, description, defaultMemberPermissions, dmPermission, options }) {
+  constructor ({ name, description, defaultPermission, options }) {
     this.type = ApplicationCommandType.ChatInput
     this.name = name
     this.description = description ?? 'No description provided'
     this.options = options ?? []
-    this.defaultMemberPermissions = defaultMemberPermissions ?? 0
-    this.dmPermission = dmPermission ?? false
+    this.defaultPermission = defaultPermission ?? false
   }
 
   asPayload () {
@@ -26,8 +24,7 @@ class SlashCommand {
         if (!o.required && o.type !== 1) o.required = false
         return o
       }),
-      default_member_permissions: this.defaultMemberPermissions,
-      dm_permission: this.dmPermission
+      defaultPermission: this.defaultPermission
     }
   }
 
