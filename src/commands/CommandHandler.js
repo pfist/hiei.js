@@ -43,7 +43,7 @@ class CommandHandler extends EventEmitter {
       }), 'name')
 
       // Uncomment this line to debug command sync
-      // console.log(`Local: ${JSON.stringify(localCommands, null, '\t')}\n\nGuild: ${JSON.stringify(guildCommands, null, '\t')}`)
+      // console.log(`Local: ${JSON.stringify(localCommands)}\n\nGuild: ${JSON.stringify(guildCommands)}`)
 
       if (this.isInSync(localCommands, guildCommands)) {
         return console.log('Commands in sync. Keep on keeping on.')
