@@ -16,6 +16,7 @@ class MessageCommand {
       type: this.type,
       name: this.name,
       description: '',
+      options: [],
       defaultPermission: this.defaultPermission
     }
   }
