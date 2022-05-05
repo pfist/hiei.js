@@ -4,7 +4,8 @@ class Ping extends SlashCommand {
   constructor () {
     super({
       name: 'ping',
-      description: 'Play ping pong with the bot'
+      description: 'Play ping pong with the bot',
+      defaultPermission: true
     })
   }
 
