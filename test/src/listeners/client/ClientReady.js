@@ -1,4 +1,5 @@
 import { Listener } from '../../../../hiei.js'
+import { ActivityType } from 'discord.js'
 
 class ClientReady extends Listener {
   constructor () {
@@ -13,7 +14,7 @@ class ClientReady extends Listener {
   run () {
     this.client.guilds.cache.each(guild => {
       console.log(`${this.client.user.tag} connected to ${guild.name}`)
-      this.client.user.setActivity('the wind', { type: 'LISTENING' })
+      this.client.user.setActivity('the wind', { type: ActivityType.Watching })
     })
   }
 }
