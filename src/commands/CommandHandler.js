@@ -53,7 +53,11 @@ class CommandHandler extends EventEmitter {
     })
 
     this.client.on('interactionCreate', async interaction => {
-      if (!interaction.isCommand()) return
+      // if (!interaction.isCommand()) return
+
+      if (interaction.isAutocomplete()) {
+        return this.handleAutocomplete(interaction)
+      }
 
       if (interaction.isChatInputCommand()) {
         return this.handleSlashCommand(interaction)
@@ -73,6 +77,20 @@ class CommandHandler extends EventEmitter {
     if (this.client.guilds.cache.some(guild => guild.id === guildId)) return await this.client.guilds.cache.get(guildId).commands.fetch()
     const guild = this.client.guilds.fetch(guildId)
     return await guild.commands.fetch()
+  }
+
+  async handleAutocomplete (interaction) {
+    const command = this.commands.get(interaction.commandName)
+    const focused = interaction.options.getFocused()
+
+    try {
+      const choices = command.choices
+      const filtered = choices.filter(choice => choice.name.toLowerCase().includes(focused))
+
+      await interaction.respond(filtered.map(choice => ({ name: choice.name, value: choice.name })))
+    } catch (error) {
+      console.error(error)
+    }
   }
 
   async handleMessageCommand (interaction, message) {
