@@ -1,6 +1,6 @@
 import EventEmitter from 'node:events'
 import { pathToFileURL } from 'node:url'
-import { Collection } from 'discord.js'
+import { Collection, InteractionType } from 'discord.js'
 import { getFiles, sortByKey } from '../HieiUtil.js'
 
 class CommandHandler extends EventEmitter {
@@ -55,7 +55,7 @@ class CommandHandler extends EventEmitter {
     this.client.on('interactionCreate', async interaction => {
       // if (!interaction.isCommand()) return
 
-      if (interaction.isAutocomplete()) {
+      if (interaction.type === InteractionType.Autocomplete) {
         return this.handleAutocomplete(interaction)
       }
 
