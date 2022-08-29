@@ -38,7 +38,7 @@ class CommandHandler extends EventEmitter {
           name: cmd.name,
           description: cmd.description,
           options: cmd.options,
-          defaultPermission: cmd.defaultPermission
+          defaultMemberPermissions: cmd.defaultMemberPermissions
         }
       }), 'name')
 
