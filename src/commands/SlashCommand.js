@@ -24,7 +24,7 @@ class SlashCommand {
         if (!o.required && o.type !== 1) o.required = false
         return o
       }),
-      defaultMemberPermissions: this.defaultMemberPermissions
+      defaultMemberPermissions: this.defaultMemberPermissions.toString()
     }
   }
 

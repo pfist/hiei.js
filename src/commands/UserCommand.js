@@ -17,7 +17,7 @@ class UserCommand {
       name: this.name,
       description: '',
       options: [],
-      defaultMemberPermissions: this.defaultMemberPermissions
+      defaultMemberPermissions: this.defaultMemberPermissions.toString()
     }
   }
 
