@@ -12,7 +12,7 @@ class SlashCommand {
     this.name = name
     this.description = description ?? 'No description provided'
     this.options = options ?? []
-    this.defaultMemberPermissions = defaultMemberPermissions ?? false
+    this.defaultMemberPermissions = defaultMemberPermissions ?? null
   }
 
   asPayload () {

@@ -8,7 +8,7 @@ class MessageCommand {
   constructor ({ name, defaultMemberPermissions }) {
     this.type = ApplicationCommandType.Message
     this.name = name
-    this.defaultMemberPermissions = defaultMemberPermissions ?? false
+    this.defaultMemberPermissions = defaultMemberPermissions ?? null
   }
 
   asPayload () {
