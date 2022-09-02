@@ -17,7 +17,7 @@ export async function getFiles (directory) {
     }
   }))
 
-  return validFiles.filter(file => file.length).flat()
+  return validFiles.filter(file => file.length).flat().filter(file => file.endsWith('.js'))
 }
 
 /** Sort an array of objects by key in descending order.
