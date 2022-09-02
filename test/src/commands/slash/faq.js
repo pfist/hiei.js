@@ -1,5 +1,7 @@
 import { SlashCommand } from '../../../../hiei.js'
-import { ApplicationCommandOptionType } from 'discord.js'
+import { ApplicationCommandOptionType, PermissionFlagsBits } from 'discord.js'
+import yaml from 'js-yaml'
+import { readFile } from 'node:fs/promises'
 
 class FAQ extends SlashCommand {
   constructor () {
@@ -14,21 +16,21 @@ class FAQ extends SlashCommand {
           required: true,
           autocomplete: true
         }
-      ]
+      ],
+      defaultMemberPermissions: PermissionFlagsBits.SendMessages
     })
   }
 
-  get choices () {
-    return [
-      { name: 'Starbucks or Dutch Bros?', value: 'Dutch Bros. Better flavor, lower sugar.' },
-      { name: 'What is the airspeed velocity of an unladen swallow?', value: 'Huh, I don\'t know that. Aaaaggghhh!' },
-      { name: 'What is the best time of year?', value: 'Halloween. :ghost:' }
-    ]
+  async choices () {
+    const file = await readFile('./src/commands/slash/faq.yml', 'utf8')
+    const data = await yaml.load(file)
+    return data
   }
 
   async run (interaction) {
     const question = interaction.options.getString('question')
-    const answer = this.choices.find(choice => choice.name === question).value
+    const choices = await this.choices()
+    const answer = choices.find(choice => choice.question === question).answer
 
     return interaction.reply({ content: answer })
   }
