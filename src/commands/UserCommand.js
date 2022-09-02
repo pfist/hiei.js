@@ -8,7 +8,7 @@ class UserCommand {
   constructor ({ name, defaultMemberPermissions }) {
     this.type = ApplicationCommandType.User
     this.name = name
-    this.defaultMemberPermissions = defaultMemberPermissions ?? null
+    this.defaultMemberPermissions = defaultMemberPermissions ?? 0
   }
 
   asPayload () {
