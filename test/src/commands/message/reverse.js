@@ -1,9 +1,11 @@
 import { MessageCommand } from '../../../../hiei.js'
+import { PermissionFlagsBits } from 'discord.js'
 
 class Reverse extends MessageCommand {
   constructor () {
     super({
-      name: 'reverse'
+      name: 'reverse',
+      defaultMemberPermissions: PermissionFlagsBits.SendMessages
     })
   }
 

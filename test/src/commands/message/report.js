@@ -5,6 +5,7 @@ import {
   InteractionType,
   EmbedBuilder,
   ModalBuilder,
+  PermissionFlagsBits,
   TextInputBuilder,
   TextInputStyle
 } from 'discord.js'
@@ -13,7 +14,8 @@ import { channelMention, userMention } from '@discordjs/builders'
 class Report extends MessageCommand {
   constructor () {
     super({
-      name: 'Report to Moderators'
+      name: 'Report to Moderators',
+      defaultMemberPermissions: PermissionFlagsBits.SendMessages
     })
   }
 
