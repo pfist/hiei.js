@@ -84,10 +84,10 @@ class CommandHandler extends EventEmitter {
     const focused = interaction.options.getFocused()
 
     try {
-      const choices = command.choices()
-      const filtered = choices.filter(choice => choice.question.toLowerCase().includes(focused))
+      const choices = await command.choices()
+      const filtered = choices.filter(choice => Object.values(choice)[0].toLowerCase().includes(focused))
 
-      await interaction.respond(filtered.map(choice => ({ name: choice.question, value: choice.answer })))
+      await interaction.respond(filtered.map(choice => ({ name: Object.values(choice)[0], value: Object.values(choice)[0] })))
     } catch (error) {
       console.error(error)
     }
