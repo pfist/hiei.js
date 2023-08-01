@@ -7,12 +7,13 @@ export class SlashCommand {
    * @param {PermissionResolvable} defaultMemberPermissions - The default permissions required to use this command.
    * @param {Array} options - Options for this command, if any.
    */
-  constructor ({ name, description, defaultMemberPermissions, options }) {
+  constructor ({ name, description, defaultMemberPermissions, options, cooldown }) {
     this.type = ApplicationCommandType.ChatInput
     this.name = name
     this.description = description ?? 'No description provided'
     this.options = options ?? []
     this.defaultMemberPermissions = defaultMemberPermissions ?? 0
+    this.cooldown = cooldown
   }
 
   toJSON () {

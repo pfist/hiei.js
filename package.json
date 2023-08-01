@@ -28,6 +28,7 @@
   "devDependencies": {
     "discord.js": "^14.12.1",
     "dotenv": "^16.0.1",
+    "ms": "^2.1.3",
     "snazzy": "^9.0.0",
     "standard": "^17.0.0"
   }
