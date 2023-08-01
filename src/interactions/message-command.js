@@ -11,7 +11,7 @@ export class MessageCommand {
     this.defaultMemberPermissions = defaultMemberPermissions ?? 0
   }
 
-  asPayload () {
+  toJSON () {
     return {
       type: this.type,
       name: this.name,

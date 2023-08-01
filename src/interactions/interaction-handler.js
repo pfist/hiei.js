@@ -37,7 +37,7 @@ export class InteractionHandler extends EventEmitter {
         }
       }
 
-      const localCommands = sortByKey(this.commands.map(cmd => cmd.asPayload()), 'name')
+      const localCommands = sortByKey(this.commands.map(cmd => cmd.toJSON()), 'name')
       const guildCommandData = await this.fetchGuildCommandData(process.env.GUILD)
       const guildCommands = sortByKey(guildCommandData.map(cmd => {
         return {
