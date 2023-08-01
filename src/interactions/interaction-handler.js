@@ -1,8 +1,10 @@
 import EventEmitter from 'node:events'
 import { pathToFileURL } from 'node:url'
 import { Collection } from 'discord.js'
+import { time } from '@discordjs/builders'
 import { getFiles } from '../utilities/file-util.js'
 import { sortByKey } from '../utilities/array-util.js'
+import ms from 'ms'
 
 export class InteractionHandler extends EventEmitter {
   /** Handles all interactions found the interactions directory.
@@ -16,6 +18,7 @@ export class InteractionHandler extends EventEmitter {
     this.directory = directory
     this.commands = new Collection()
     this.modals = new Collection()
+    this.cooldowns = new Collection()
 
     this.init()
   }
@@ -34,6 +37,7 @@ export class InteractionHandler extends EventEmitter {
           this.modals.set(i.id, i)
         } else {
           this.commands.set(i.name, i)
+          this.cooldowns.set(i.name, { member: null, timestamp: null })
         }
       }
 
@@ -133,13 +137,28 @@ export class InteractionHandler extends EventEmitter {
     }
   }
 
+  formatDate (date) {
+    return new Intl.DateTimeFormat('en-US', { dateStyle: 'short', timeStyle: 'medium' }).format(date)
+  }
+
   async handleSlashCommand (interaction) {
     const command = this.commands.get(interaction.commandName)
+    const cooldown = this.cooldowns.get(interaction.commandName)
+    const expiration = cooldown.timestamp + command.cooldown
+    const now = Date.now()
 
-    try {
-      await command.run(interaction)
-    } catch (error) {
-      console.error(error)
+    if (cooldown.timestamp && now < expiration) {
+      await command.onCooldown(interaction, cooldown, ms(expiration - now, { long: true }))
+    } else {
+      try {
+        await command.run(interaction)
+        this.cooldowns.set(interaction.commandName, {
+          member: interaction.member,
+          timestamp: new Date().getTime()
+        })
+      } catch (error) {
+        console.error(error)
+      }
     }
   }
 
