@@ -26,11 +26,9 @@
     "test": "echo \"No test specified\""
   },
   "devDependencies": {
+    "discord.js": "^14.12.1",
     "dotenv": "^16.0.1",
     "snazzy": "^9.0.0",
     "standard": "^17.0.0"
-  },
-  "dependencies": {
-    "discord.js": "^14.12.1"
   }
 }
