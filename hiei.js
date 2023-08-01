@@ -1,7 +1,0 @@
-export { default as HieiClient } from './src/HieiClient.js'
-export { default as CommandHandler } from './src/commands/CommandHandler.js'
-export { default as MessageCommand } from './src/commands/MessageCommand.js'
-export { default as SlashCommand } from './src/commands/SlashCommand.js'
-export { default as UserCommand } from './src/commands/UserCommand.js'
-export { default as Listener } from './src/listeners/Listener.js'
-export { default as ListenerHandler } from './src/listeners/ListenerHandler.js'

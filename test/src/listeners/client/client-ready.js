@@ -1,4 +1,4 @@
-import { Listener } from '../../../../hiei.js'
+import { Listener } from '../../../../src/hiei.js'
 import { ActivityType } from 'discord.js'
 
 class ClientReady extends Listener {

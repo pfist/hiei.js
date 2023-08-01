@@ -1,6 +1,6 @@
 import { ApplicationCommandType } from 'discord.js'
 
-class UserCommand {
+export class UserCommand {
   /** An application command invoked directly on a user from the context menu.
    * @param {string} name - The name of this command. (1-32 characters)
    * @param {PermissionResolvable} defaultMemberPermissions - The default permissions required to use this command.
@@ -25,5 +25,3 @@ class UserCommand {
     throw new Error(`Error: ${this.constructor.name}#run not implemented`)
   }
 }
-
-export default UserCommand

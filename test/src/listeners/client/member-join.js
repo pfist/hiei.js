@@ -1,4 +1,4 @@
-import { Listener } from '../../../../hiei.js'
+import { Listener } from '../../../../src/hiei.js'
 
 class MemberJoin extends Listener {
   constructor () {

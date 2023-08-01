@@ -1,12 +1,13 @@
 import EventEmitter from 'node:events'
 import { pathToFileURL } from 'node:url'
 import { Collection } from 'discord.js'
-import { getFiles, sortByKey } from '../HieiUtil.js'
+import { getFiles } from '../utilities/file-util.js'
+import { sortByKey } from '../utilities/array-util.js'
 
-class CommandHandler extends EventEmitter {
-  /** Handles all commands found the commands directory.
-   * @param {Client} client - The client this command handler runs on.
-   * @param {string} directory - The directory where command files will be handled recursively.
+export class InteractionHandler extends EventEmitter {
+  /** Handles all interactions found the interactions directory.
+   * @param {Client} client - The client that runs this interaction handler.
+   * @param {string} directory - The directory where interactions are stored.
    */
   constructor (client, directory) {
     super()
@@ -14,6 +15,7 @@ class CommandHandler extends EventEmitter {
     this.client = client
     this.directory = directory
     this.commands = new Collection()
+    this.modals = new Collection()
 
     this.init()
   }
@@ -23,11 +25,16 @@ class CommandHandler extends EventEmitter {
       const files = await getFiles(this.directory)
 
       for (const file of files) {
-        const Command = (await import(pathToFileURL(file))).default
-        const c = new Command()
+        const { default: Interaction } = await import(pathToFileURL(file))
+        const i = new Interaction()
 
-        c.client = this.client
-        this.commands.set(c.name, c)
+        i.client = this.client
+
+        if (i.type === 'modalSubmit') {
+          this.modals.set(i.id, i)
+        } else {
+          this.commands.set(i.name, i)
+        }
       }
 
       const localCommands = sortByKey(this.commands.map(cmd => cmd.asPayload()), 'name')
@@ -45,16 +52,14 @@ class CommandHandler extends EventEmitter {
       // Uncomment this line to debug command sync
       // console.log(`Local: ${JSON.stringify(localCommands)}\n\nGuild: ${JSON.stringify(guildCommands)}`)
 
-      if (this.isInSync(localCommands, guildCommands)) {
-        return console.log('Commands in sync. Keep on keeping on.')
+      if (this.commandsUpToDate(localCommands, guildCommands)) {
+        return console.log('Commands synchronized')
       } else {
-        await this.syncCommands(localCommands, process.env.GUILD)
+        await this.updateGuildCommands(localCommands, process.env.GUILD)
       }
     })
 
     this.client.on('interactionCreate', async interaction => {
-      // if (!interaction.isCommand()) return
-
       if (interaction.isAutocomplete()) {
         return this.handleAutocomplete(interaction)
       }
@@ -69,6 +74,10 @@ class CommandHandler extends EventEmitter {
 
       if (interaction.isUserContextMenuCommand()) {
         return this.handleUserCommand(interaction, interaction.options.getUser('user'))
+      }
+
+      if (interaction.isModalSubmit()) {
+        return this.handleModalSubmission(interaction)
       }
     })
   }
@@ -93,21 +102,22 @@ class CommandHandler extends EventEmitter {
     }
   }
 
-  async handleMessageCommand (interaction, message) {
-    const command = this.commands.get(interaction.commandName)
+  async handleModalSubmission (interaction) {
+    console.log(this.modals)
+    const modalSubmit = this.modals.get(interaction.customId)
 
     try {
-      await command.run(interaction, message)
+      await modalSubmit.run(interaction)
     } catch (error) {
       console.error(error)
     }
   }
 
-  async handleSlashCommand (interaction) {
+  async handleMessageCommand (interaction, message) {
     const command = this.commands.get(interaction.commandName)
 
     try {
-      await command.run(interaction)
+      await command.run(interaction, message)
     } catch (error) {
       console.error(error)
     }
@@ -123,17 +133,25 @@ class CommandHandler extends EventEmitter {
     }
   }
 
-  isInSync (localCommandData, guildCommandData) {
-    return JSON.stringify(localCommandData) === JSON.stringify(guildCommandData)
+  async handleSlashCommand (interaction) {
+    const command = this.commands.get(interaction.commandName)
+
+    try {
+      await command.run(interaction)
+    } catch (error) {
+      console.error(error)
+    }
   }
 
-  async syncCommands (data, guildId) {
+  async updateGuildCommands (commandData, guildId) {
     console.log('Commands out of sync. Updating...')
 
     const guild = this.client.guilds.cache.get(guildId)
-    await guild.commands.set(data)
-    return console.log(`${data.length} commands registered for ${guild.name}.`)
+    await guild.commands.set(commandData)
+    return console.log(`${commandData.length} commands registered for ${guild.name}.`)
+  }
+
+  commandsUpToDate (localCommandData, guildCommandData) {
+    return JSON.stringify(localCommandData) === JSON.stringify(guildCommandData)
   }
 }
-
-export default CommandHandler
