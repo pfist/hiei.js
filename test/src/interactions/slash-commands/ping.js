@@ -1,6 +1,6 @@
-import { SlashCommand } from '../../../../hiei.js'
+import { SlashCommand } from '../../../../src/hiei.js'
 
-class Ping extends SlashCommand {
+export default class Ping extends SlashCommand {
   constructor () {
     super({
       name: 'ping',
@@ -13,5 +13,3 @@ class Ping extends SlashCommand {
     await interaction.reply({ content: ':ping_pong: Pong!' })
   }
 }
-
-export default Ping

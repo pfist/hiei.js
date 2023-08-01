@@ -1,6 +1,6 @@
 import { ApplicationCommandType } from 'discord.js'
 
-class SlashCommand {
+export class SlashCommand {
   /** An application command invoked by typing / in a text channel.
    * @param {string} name - The name of this command. (1-32 characters)
    * @param {string} description - The description of this command. (1-100 characters)
@@ -32,5 +32,3 @@ class SlashCommand {
     throw new Error(`Error: ${this.constructor.name}#run not implemented`)
   }
 }
-
-export default SlashCommand

@@ -1,4 +1,4 @@
-class Listener {
+export class Listener {
   /** An event listener used for reacting to Discord events.
    * @param {string} name - The name of this listener.
    * @param {string} emitter - The source that emits the event you want to listen to.
@@ -17,5 +17,3 @@ class Listener {
     throw new Error(`Error: ${this.constructor.name}#run not implemented`)
   }
 }
-
-export default Listener

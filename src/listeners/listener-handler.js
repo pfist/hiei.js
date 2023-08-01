@@ -1,6 +1,6 @@
 import EventEmitter from 'node:events'
 import { pathToFileURL } from 'node:url'
-import { getFiles } from '../HieiUtil.js'
+import { getFiles } from '../utilities/file-util.js'
 
 export class ListenerHandler extends EventEmitter {
   /** Handles all event listeners found in the listeners directory.
@@ -33,5 +33,3 @@ export class ListenerHandler extends EventEmitter {
     }
   }
 }
-
-export default ListenerHandler
