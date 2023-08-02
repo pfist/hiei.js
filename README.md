@@ -1,13 +1,12 @@
 # hiei
 A tiny bot framework for discord.js. Get started quickly with [Jagan](https://github.com/pfist/jagan).
 
-> 🐉 Hiei is under active development and may change significantly at any time. Proceed with caution!
-
 ## Features
-- Fully embrace interactions
-- Modular commands and event listeners
+- Fully embrace interactions — no old-school message commands
+- Modular commands, event listeners, and modal submissions
 - Slash, message, and user commands supported
-- Automatic command sync
+- Slash command cooldowns
+- Automatic command registration
 - Simple and lightweight
 - Zero dependencies
 
