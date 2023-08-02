@@ -1,4 +1,4 @@
-# hiei
+# hiei.js
 A tiny bot framework for discord.js. Get started quickly with [Jagan](https://github.com/pfist/jagan).
 
 ## Features
