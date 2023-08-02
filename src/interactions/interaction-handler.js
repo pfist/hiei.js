@@ -3,6 +3,7 @@ import { pathToFileURL } from 'node:url'
 import { Collection } from 'discord.js'
 import { getFiles } from '../utilities/file-util.js'
 import { sortByKey } from '../utilities/array-util.js'
+import { ModalSubmission } from './modal-submission.js'
 import ms from 'ms'
 
 export class InteractionHandler extends EventEmitter {
@@ -32,7 +33,7 @@ export class InteractionHandler extends EventEmitter {
 
         i.client = this.client
 
-        if (i.type === 'modalSubmit') {
+        if (i instanceof ModalSubmission) {
           this.modals.set(i.id, i)
         } else {
           this.commands.set(i.name, i)
@@ -106,7 +107,6 @@ export class InteractionHandler extends EventEmitter {
   }
 
   async handleModalSubmission (interaction) {
-    console.log(this.modals)
     const modalSubmit = this.modals.get(interaction.customId)
 
     try {

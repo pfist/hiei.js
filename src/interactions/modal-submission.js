@@ -3,7 +3,6 @@ export class ModalSubmission {
    * @param {string} id - The custom ID of the submitted modal.
    */
   constructor ({ id }) {
-    this.type = 'modalSubmit'
     this.id = id
   }
 
