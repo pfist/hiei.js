@@ -2,7 +2,7 @@
 A tiny bot framework for discord.js. Get started quickly with [Jagan](https://github.com/pfist/jagan).
 
 ## Features
-- Fully embrace interactions — no classic message-based commands
+- Fully embrace slash commands
 - Modular commands, event listeners, and modal submissions
 - Slash, message, and user commands supported
 - Slash command cooldowns
