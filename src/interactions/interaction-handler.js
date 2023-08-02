@@ -1,7 +1,6 @@
 import EventEmitter from 'node:events'
 import { pathToFileURL } from 'node:url'
 import { Collection } from 'discord.js'
-import { time } from '@discordjs/builders'
 import { getFiles } from '../utilities/file-util.js'
 import { sortByKey } from '../utilities/array-util.js'
 import ms from 'ms'
