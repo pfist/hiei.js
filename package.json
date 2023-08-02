@@ -10,7 +10,6 @@
     "slash commands",
     "interactions"
   ],
-  "author": "Nick Pfisterer <nick@polymoon.net> (https://polymoon.net)",
   "type": "module",
   "main": "hiei.js",
   "exports": "./hiei.js",
