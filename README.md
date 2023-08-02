@@ -11,7 +11,7 @@ A tiny bot framework for discord.js. Get started quickly with [Jagan](https://gi
 - Zero dependencies
 
 ## Installation
-Hiei requires Node 16.9.0 and discord.js 14.
+hiei.js requires Node 16.9.0 and discord.js 14.
 
 ```
 npm install discord.js
@@ -19,6 +19,6 @@ npm install hiei.js
 ```
 
 ## Links
-- [Hiei docs](https://hiei.pages.dev)
+- [hiei.js docs](https://hiei.pages.dev)
 - [discord.js docs](https://discord.js.org)
 - [discord.js guide](https://discordjs.guide)
