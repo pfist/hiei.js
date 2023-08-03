@@ -12,7 +12,7 @@
   ],
   "type": "module",
   "main": "hiei.js",
-  "exports": "./hiei.js",
+  "exports": "./src/hiei.js",
   "files": [
     "src"
   ],
