@@ -109,10 +109,12 @@ export class InteractionHandler extends EventEmitter {
   async handleModalSubmission (interaction) {
     const modalSubmit = this.modals.get(interaction.customId)
 
-    try {
-      await modalSubmit.run(interaction)
-    } catch (error) {
-      console.error(error)
+    if (modalSubmit) {
+      try {
+        await modalSubmit.run(interaction)
+      } catch (error) {
+        console.error(error)
+      }
     }
   }
 
