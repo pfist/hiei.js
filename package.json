@@ -21,7 +21,7 @@
   },
   "scripts": {
     "lint": "standard | snazzy",
-    "dev": "cd test && node -r dotenv/config bot",
+    "start": "cd test && node -r dotenv/config bot",
     "test": "echo \"No test specified\""
   },
   "devDependencies": {
