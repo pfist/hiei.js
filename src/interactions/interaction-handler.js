@@ -4,6 +4,7 @@ import { Collection } from 'discord.js'
 import { getFiles } from '../utilities/file-util.js'
 import { sortByKey } from '../utilities/array-util.js'
 import { ModalSubmission } from './modal-submission.js'
+import { ButtonResponse } from './button-response.js'
 import ms from 'ms'
 
 export class InteractionHandler extends EventEmitter {
@@ -19,6 +20,7 @@ export class InteractionHandler extends EventEmitter {
     this.commands = new Collection()
     this.modals = new Collection()
     this.cooldowns = new Collection()
+    this.buttons = new Collection()
 
     this.init()
   }
@@ -35,6 +37,8 @@ export class InteractionHandler extends EventEmitter {
 
         if (i instanceof ModalSubmission) {
           this.modals.set(i.id, i)
+        } else if (i instanceof ButtonResponse) {
+          this.buttons.set(i.id, i)
         } else {
           this.commands.set(i.name, i)
           this.cooldowns.set(i.name, { member: null, timestamp: null })
@@ -83,6 +87,10 @@ export class InteractionHandler extends EventEmitter {
       if (interaction.isModalSubmit()) {
         return this.handleModalSubmission(interaction)
       }
+
+      if (interaction.isButton()) {
+        return this.handleButton(interaction)
+      }
     })
   }
 
@@ -103,6 +111,18 @@ export class InteractionHandler extends EventEmitter {
       await interaction.respond(filtered.map(choice => ({ name: Object.values(choice)[0], value: Object.values(choice)[0] })))
     } catch (error) {
       console.error(error)
+    }
+  }
+
+  async handleButton (interaction) {
+    const button = this.buttons.get(interaction.customId)
+
+    if (button) {
+      try {
+        await button.run(interaction)
+      } catch (error) {
+        console.error(error)
+      }
     }
   }
 
