@@ -1,21 +1,12 @@
-import { promises as fs } from 'node:fs'
-import path from 'node:path'
+import { readdir } from 'node:fs/promises'
+import { join } from 'node:path'
 
 /** Get an array of JS files found in a directory recursively.
  * @param {string} directory - The directory to get files from.
 */
-export async function getFiles (directory) {
-  const files = await fs.readdir(directory)
-  const validFiles = await Promise.all(files.map(async (file) => {
-    const filepath = path.join(directory, file)
-    const stats = await fs.stat(filepath)
-
-    if (stats.isDirectory()) {
-      return getFiles(filepath)
-    } else {
-      return filepath
-    }
-  }))
-
-  return validFiles.filter(file => file.length).flat().filter(file => file.endsWith('.js'))
+export async function discoverFiles (dir) {
+  const files = await readdir(dir, { recursive: true, withFileTypes: true })
+  return files
+    .filter(file => file.isFile() && file.name.endsWith('.js'))
+    .map(file => join(dir, file.name))
 }
