@@ -1,6 +1,6 @@
 import EventEmitter from 'node:events'
 import { pathToFileURL } from 'node:url'
-import { getFiles } from '../utilities/file-util.js'
+import { discoverFiles } from '../utilities/file-util.js'
 
 export class ListenerHandler extends EventEmitter {
   /** Handles all event listeners found in the listeners directory.
@@ -17,7 +17,7 @@ export class ListenerHandler extends EventEmitter {
   }
 
   async init () {
-    const files = await getFiles(this.directory)
+    const files = await discoverFiles(this.directory)
 
     for (const file of files) {
       const Listener = (await import(pathToFileURL(file))).default
