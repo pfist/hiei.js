@@ -62,18 +62,22 @@ export class InteractionHandler extends EventEmitter {
     const files = await discoverFiles(this.directory)
 
     for (const file of files) {
-      const { default: Interaction } = await import(pathToFileURL(file))
-      const i = new Interaction()
-
-      i.client = this.client
-
-      if (i instanceof ModalSubmission) {
-        this.modals.set(i.id, i)
-      } else if (i instanceof ButtonResponse) {
-        this.buttons.set(i.id, i)
-      } else {
-        this.commands.set(i.name, i)
-        this.cooldowns.set(i.name, { member: null, timestamp: null })
+      try {
+        const { default: Interaction } = await import(pathToFileURL(file))
+        const i = new Interaction()
+  
+        i.client = this.client
+  
+        if (i instanceof ModalSubmission) {
+          this.modals.set(i.id, i)
+        } else if (i instanceof ButtonResponse) {
+          this.buttons.set(i.id, i)
+        } else {
+          this.commands.set(i.name, i)
+          this.cooldowns.set(i.name, { member: null, timestamp: null })
+        }
+      } catch (error) {
+        console.error(`Failed to load interaction from ${file}:`, error)
       }
     }
   }
