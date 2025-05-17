@@ -1,7 +1,7 @@
 import EventEmitter from 'node:events'
 import { pathToFileURL } from 'node:url'
 import { Collection } from 'discord.js'
-import { getFiles } from '../utilities/file-util.js'
+import { discoverFiles } from '../utilities/file-util.js'
 import { sortByKey } from '../utilities/array-util.js'
 import { ModalSubmission } from './modal-submission.js'
 import { ButtonResponse } from './button-response.js'
@@ -27,44 +27,8 @@ export class InteractionHandler extends EventEmitter {
 
   init () {
     this.client.once('ready', async () => {
-      const files = await getFiles(this.directory)
-
-      for (const file of files) {
-        const { default: Interaction } = await import(pathToFileURL(file))
-        const i = new Interaction()
-
-        i.client = this.client
-
-        if (i instanceof ModalSubmission) {
-          this.modals.set(i.id, i)
-        } else if (i instanceof ButtonResponse) {
-          this.buttons.set(i.id, i)
-        } else {
-          this.commands.set(i.name, i)
-          this.cooldowns.set(i.name, { member: null, timestamp: null })
-        }
-      }
-
-      const localCommands = sortByKey(this.commands.map(cmd => cmd.toJSON()), 'name')
-      const guildCommandData = await this.fetchGuildCommandData(process.env.GUILD)
-      const guildCommands = sortByKey(guildCommandData.map(cmd => {
-        return {
-          type: cmd.type,
-          name: cmd.name,
-          description: cmd.description,
-          options: cmd.options,
-          defaultMemberPermissions: cmd.defaultMemberPermissions
-        }
-      }), 'name')
-
-      // Uncomment this line to debug command sync
-      // console.log(`Local: ${JSON.stringify(localCommands)}\n\nGuild: ${JSON.stringify(guildCommands)}`)
-
-      if (this.commandsUpToDate(localCommands, guildCommands)) {
-        return console.log('Commands synchronized')
-      } else {
-        await this.updateGuildCommands(localCommands, process.env.GUILD)
-      }
+      await this.loadInteractions()
+      await this.syncCommands()
     })
 
     this.client.on('interactionCreate', async interaction => {
@@ -92,6 +56,26 @@ export class InteractionHandler extends EventEmitter {
         return this.handleButton(interaction)
       }
     })
+  }
+
+  async loadInteractions () {
+    const files = await discoverFiles(this.directory)
+
+    for (const file of files) {
+      const { default: Interaction } = await import(pathToFileURL(file))
+      const i = new Interaction()
+
+      i.client = this.client
+
+      if (i instanceof ModalSubmission) {
+        this.modals.set(i.id, i)
+      } else if (i instanceof ButtonResponse) {
+        this.buttons.set(i.id, i)
+      } else {
+        this.commands.set(i.name, i)
+        this.cooldowns.set(i.name, { member: null, timestamp: null })
+      }
+    }
   }
 
   async fetchGuildCommandData (guildId) {
@@ -180,6 +164,29 @@ export class InteractionHandler extends EventEmitter {
       } catch (error) {
         console.error(error)
       }
+    }
+  }
+
+  async syncCommands () {
+    const localCommands = sortByKey(this.commands.map(cmd => cmd.toJSON()), 'name')
+    const guildCommandData = await this.fetchGuildCommandData(process.env.GUILD)
+    const guildCommands = sortByKey(guildCommandData.map(cmd => {
+      return {
+        type: cmd.type,
+        name: cmd.name,
+        description: cmd.description,
+        options: cmd.options,
+        defaultMemberPermissions: cmd.defaultMemberPermissions
+      }
+    }), 'name')
+
+    // Uncomment this line to debug command sync
+    // console.log(`Local: ${JSON.stringify(localCommands)}\n\nGuild: ${JSON.stringify(guildCommands)}`)
+
+    if (this.commandsUpToDate(localCommands, guildCommands)) {
+      return console.log('Commands synchronized')
+    } else {
+      await this.updateGuildCommands(localCommands, process.env.GUILD)
     }
   }
 
