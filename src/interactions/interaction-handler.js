@@ -73,6 +73,10 @@ export class InteractionHandler extends EventEmitter {
         } else if (i instanceof ButtonResponse) {
           this.buttons.set(i.id, i)
         } else {
+          if (!i.name || typeof i.toJSON !== 'function') {
+            console.warn(`Command in ${file} is missing a name or toJSON method.`)
+            continue
+          }
           this.commands.set(i.name, i)
           this.cooldowns.set(i.name, { member: null, timestamp: null })
         }
