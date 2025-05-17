@@ -65,9 +65,9 @@ export class InteractionHandler extends EventEmitter {
       try {
         const { default: Interaction } = await import(pathToFileURL(file))
         const i = new Interaction()
-  
+
         i.client = this.client
-  
+
         if (i instanceof ModalSubmission) {
           this.modals.set(i.id, i)
         } else if (i instanceof ButtonResponse) {
