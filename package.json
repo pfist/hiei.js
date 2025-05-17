@@ -22,6 +22,7 @@
   "scripts": {
     "lint": "standard | snazzy",
     "start": "cd test && node -r dotenv/config bot",
+    "dev": "cd test && bun bot.js",
     "test": "echo \"No test specified\""
   },
   "devDependencies": {
