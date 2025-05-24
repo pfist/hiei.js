@@ -8,5 +8,5 @@ export async function discoverFiles (dir) {
   const files = await readdir(dir, { recursive: true, withFileTypes: true })
   return files
     .filter(file => file.isFile() && file.name.endsWith('.js'))
-    .map(file => join(dir, file.name))
+    .map(file => join(file.path, file.name))
 }
