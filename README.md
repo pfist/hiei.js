@@ -5,17 +5,16 @@ A tiny bot framework for discord.js.
 - Fully embrace slash commands
 - Modular commands, event listeners, and modal submissions
 - Slash, message, and user commands supported
-- Slash command cooldowns
 - Automatic command registration
 - Simple and lightweight
 - Zero dependencies
 
 ## Installation
-hiei.js requires Node 16.9.0 and discord.js 14.
+hiei.js requires Node 20.x and discord.js 14.x.
 
 ```
-npm install discord.js
-npm install hiei.js
+bun add discord.js
+bun add hiei.js
 ```
 
 ## Links
