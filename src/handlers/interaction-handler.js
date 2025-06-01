@@ -254,14 +254,16 @@ export async function createInteractionHandler (client, { commandDirectory = './
     }
   }
 
-  function stripRemoteCommand (command) {
-    return {
-      type: command.type,
+  function normalizeCommand (command) {
+    const normalized = {
+      type: command.type !== undefined ? command.type : 1,
       name: command.name,
-      description: command.description,
-      options: command.options,
+      description: command.description ? command.description : '',
       defaultMemberPermissions: command.defaultMemberPermissions
     }
+
+    if (command.options !== undefined && command.options.length > 0) normalized.options = command.options
+    return normalized
   }
 
   async function syncCommands () {
@@ -277,10 +279,14 @@ export async function createInteractionHandler (client, { commandDirectory = './
       console.error('[hiei:sync] Failed to fetch remote commands.', error)
     }
 
-    const localMap = new Map(localCommands.map(cmd => [cmd.name, cmd]))
-    const remoteMap = new Map(remoteCommands.map(cmd => [cmd.name, stripRemoteCommand(cmd)]))
+    const localMap = new Map(localCommands.map(cmd => [cmd.name, normalizeCommand(cmd)]))
+    const remoteMap = new Map(remoteCommands.map(cmd => [cmd.name, normalizeCommand(cmd)]))
 
     let needsUpdate = false
+
+    // DEBUG - Uncomment these to if you are debuygging command sync
+    // console.debug('Local:', JSON.stringify(Object.fromEntries(localMap), null, 2))
+    // console.debug('Remote:', JSON.stringify(Object.fromEntries(remoteMap), null, 2))
 
     // Check for new or modified commands
     console.log('[hiei:sync] Checking for new or modified commands...')
