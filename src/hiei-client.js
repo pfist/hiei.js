@@ -1,6 +1,6 @@
+import path from 'node:path'
 import { Client } from 'discord.js'
-import { InteractionHandler } from './interactions/interaction-handler.js'
-import { ListenerHandler } from './listeners/listener-handler.js'
+import { createInteractionHandler } from './handlers/interaction-handler.js'
 
 export class HieiClient extends Client {
   /** An extension of the discord.js client. Loads command and listener handlers but is otherwise unchanged.
@@ -9,7 +9,9 @@ export class HieiClient extends Client {
   constructor (options = {}) {
     super(options)
 
-    this.interactionHandler = new InteractionHandler(this, 'src/interactions')
-    this.listenerHandler = new ListenerHandler(this, 'src/listeners')
+    createInteractionHandler(this, {
+      commandDirectory: './commands',
+      componentDirectory: './components'
+    })
   }
 }
