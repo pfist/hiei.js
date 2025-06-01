@@ -144,8 +144,17 @@ export async function buildSelectComponent (component) {
       data = new MentionableSelectMenuBuilder()
       break
     default:
-      // Default to StringSelectMenuBuilder
       data = new StringSelectMenuBuilder()
+  }
+
+  data.setCustomId(component.id)
+
+  if (component.placeholder) data.setPlaceholder(component.placeholder)
+  if (component.min !== undefined) data.setMinValues(component.minValues)
+  if (component.max !== undefined) data.setMaxValues(component.maxValues)
+  if (component.disabled !== undefined) data.setDisabled(component.disabled)
+  if (data instanceof StringSelectMenuBuilder && Array.isArray(component.options)) {
+    data.addOptions(component.options)
   }
 
   return data
