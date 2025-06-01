@@ -167,7 +167,7 @@ export async function createInteractionHandler (client, { commandDirectory = './
       }
 
       try {
-        await command.execute(interaction, client)
+        await command.execute(interaction, interaction.options.getMessage('message'), client)
       } catch (error) {
         console.error(`[hiei:interactions] Error executing message command "${interaction.commandName}":`, error)
       }
@@ -187,7 +187,7 @@ export async function createInteractionHandler (client, { commandDirectory = './
       }
 
       try {
-        await command.execute(interaction, client)
+        await command.execute(interaction, interaction.options.getUser('user'), client)
       } catch (error) {
         console.error(`[hiei:interactions] Error executing user command "${interaction.commandName}":`, error)
       }
