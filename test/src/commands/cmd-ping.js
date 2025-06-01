@@ -4,7 +4,7 @@ export default {
   interaction: 'slash',
   name: 'ping',
   description: 'Play ping pong with the bot',
-  defaultMemberPermissions: PermissionFlagsBits.SendMessage,
+  defaultMemberPermissions: PermissionFlagsBits.SendMessages,
   async execute (interaction) {
     await interaction.reply({ content: ':ping_pong: Pong!' })
   }
