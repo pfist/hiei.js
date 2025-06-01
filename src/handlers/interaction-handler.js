@@ -177,7 +177,7 @@ export async function createInteractionHandler (client, { commandDirectory, comp
     if (interaction.isButton()) {
       const component = components.get(`button:${interaction.customId}`)
       if (!component) {
-        console.warn(`Button component "${interaction.customId}" not found.`)
+        console.warn(`Button component "${interaction.customId}" not found. This warning can be safely ignored for contextual buttons.`)
         return
       }
 
@@ -197,7 +197,7 @@ export async function createInteractionHandler (client, { commandDirectory, comp
     if (interaction.isAnySelectMenu()) {
       const component = components.get(`select:${interaction.customId}`)
       if (!component) {
-        console.warn(`Select menu component "${interaction.customId}" not found.`)
+        console.warn(`Select menu component "${interaction.customId}" not found. This warning can be safely ignored for contextual select menus.`)
         return
       }
 
@@ -217,7 +217,7 @@ export async function createInteractionHandler (client, { commandDirectory, comp
     if (interaction.isModalSubmit()) {
       const component = components.get(`modal:${interaction.customId}`)
       if (!component) {
-        console.warn(`Modal component "${interaction.customId}" not found.`)
+        console.warn(`Modal component "${interaction.customId}" not found. This warning can be safely ignored for contextual modals.`)
         return
       }
 
