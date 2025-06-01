@@ -1,5 +1,6 @@
 import { pathToFileURL } from 'node:url'
 import { resolve } from 'node:path'
+import { existsSync } from 'node:fs'
 import { Collection, REST } from 'discord.js'
 import { discoverFiles } from '../utilities/file-util.js'
 import {
@@ -11,13 +12,32 @@ import {
   buildSelectComponent
 } from '../utilities/interaction-util.js'
 
-export async function createInteractionHandler (client, { commandDirectory, componentDirectory }) {
+export async function createInteractionHandler (client, { commandDirectory = './src/commands', componentDirectory = './src/components' }) {
   const commands = new Collection()
   const components = new Collection()
 
+  const commandsPath = resolve(process.cwd(), commandDirectory)
+  const componentsPath = resolve(process.cwd(), componentDirectory)
+
+  if (!existsSync(commandsPath)) {
+    console.error(`[hiei:commands] There is no command directory. Please create one at ${commandsPath} or define a custom path in your interaction handler.`)
+    process.exit(1)
+  }
+
+  const componentsEnabled = existsSync(componentsPath)
+
+  if (!componentsEnabled) {
+    console.warn('[hiei:components] There is no component directory. Components will be disabled.')
+    process.exit(1)
+  }
+
   client.once('ready', async () => {
-    await loadCommands(resolve(process.cwd(), commandDirectory))
-    await loadComponents(resolve(process.cwd(), componentDirectory))
+    await loadCommands(commandsPath)
+
+    if (componentsEnabled) {
+      await loadComponents(componentsPath)
+    }
+
     await syncCommands()
   })
 
