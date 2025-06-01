@@ -54,7 +54,7 @@ export async function createInteractionHandler (client, { commandDirectory, comp
       }
     }
 
-    console.log(`Loaded ${commands.size} commands from ${directory}`)
+    console.log(`Loaded ${commands.size} ${commands.size === 1 ? 'command' : 'commands'} from ${directory}`)
   }
 
   async function loadComponents (directory) {
@@ -88,7 +88,7 @@ export async function createInteractionHandler (client, { commandDirectory, comp
       }
     }
 
-    console.log(`Loaded ${components.size} components from ${directory}`)
+    console.log(`Loaded ${components.size} ${components.size === 1 ? 'component' : 'components'} from ${directory}`)
   }
 
   async function handleInteraction (interaction) {
