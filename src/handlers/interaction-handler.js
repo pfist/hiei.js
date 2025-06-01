@@ -46,7 +46,7 @@ export async function createInteractionHandler (client, { commandDirectory = './
   async function loadCommands (directory) {
     const files = await discoverFiles(directory)
     if (!files.length) {
-      return console.warn(`No command files found in directory: ${directory}`)
+      return console.warn(`[hiei:commands] Command directory is empty: ${directory}`)
     }
 
     for (const file of files) {
@@ -65,22 +65,22 @@ export async function createInteractionHandler (client, { commandDirectory = './
             data = await buildUserCommand(command)
             break
           default:
-            throw new Error(`Unknown command interaction type: ${command.interaction}`)
+            throw new Error(`[hiei:commands] Unknown command interaction type: ${command.interaction}`)
         }
 
         commands.set(command.name, { ...command, data })
       } catch (error) {
-        console.error(`Failed to load command: ${file}`, error)
+        console.error(`[hiei:commands] Failed to load command: ${file}`, error)
       }
     }
 
-    console.log(`Loaded ${commands.size} ${commands.size === 1 ? 'command' : 'commands'} from ${directory}`)
+    console.log(`[hiei:commands] Loaded ${commands.size} ${commands.size === 1 ? 'command' : 'commands'} from ${directory}`)
   }
 
   async function loadComponents (directory) {
     const files = await discoverFiles(directory)
     if (!files.length) {
-      return console.warn(`No component files found in directory: ${directory}`)
+      return console.warn(`[hiei:components] Component directory is empty: ${directory}`)
     }
 
     for (const file of files) {
@@ -99,16 +99,16 @@ export async function createInteractionHandler (client, { commandDirectory = './
             data = await buildSelectComponent(component)
             break
           default:
-            throw new Error(`Unknown component interaction type: ${component.interaction}`)
+            throw new Error(`[hiei:components] Unknown component interaction type: ${component.interaction}`)
         }
 
         components.set(`${component.interaction}:${component.id}`, { ...component, data })
       } catch (error) {
-        console.error(`Failed to load component: ${file}`, error)
+        console.error(`[hiei:components] Failed to load component: ${file}`, error)
       }
     }
 
-    console.log(`Loaded ${components.size} ${components.size === 1 ? 'component' : 'components'} from ${directory}`)
+    console.log(`[hiei:components] Loaded ${components.size} ${components.size === 1 ? 'component' : 'components'} from ${directory}`)
   }
 
   async function handleInteraction (interaction) {
@@ -116,12 +116,12 @@ export async function createInteractionHandler (client, { commandDirectory = './
     if (interaction.isAutocomplete()) {
       const command = commands.get(interaction.commandName)
       if (!command) {
-        console.warn(`Command "${interaction.commandName}" not found.`)
+        console.warn(`[hiei:interactions] Command "${interaction.commandName}" not found.`)
         return
       }
 
       if (typeof command.autocomplete !== 'function') {
-        console.warn(`Autocomplete interaction received for command "${interaction.commandName}" but no autocomplete() method is defined.`)
+        console.warn(`[hiei:interactions] Autocomplete interaction received for command "${interaction.commandName}" but no autocomplete() method is defined.`)
         return
       }
 
@@ -129,7 +129,7 @@ export async function createInteractionHandler (client, { commandDirectory = './
         const choices = await command.autocomplete(interaction)
         await interaction.respond(choices)
       } catch (error) {
-        console.error(`Autocomplete for command "${interaction.commandName}" encountered an error:`, error)
+        console.error(`[hiei:interactions] Autocomplete for command "${interaction.commandName}" encountered an error:`, error)
       }
     }
 
@@ -137,19 +137,19 @@ export async function createInteractionHandler (client, { commandDirectory = './
     if (interaction.isChatInputCommand()) {
       const command = commands.get(interaction.commandName)
       if (!command) {
-        console.warn(`Slash command "${interaction.commandName}" not found.`)
+        console.warn(`[hiei:interactions] Slash command "${interaction.commandName}" not found.`)
         return
       }
 
       if (typeof command.execute !== 'function') {
-        console.warn(`Slash command "${interaction.commandName}" has no execute() method.`)
+        console.warn(`[hiei:interactions] Slash command "${interaction.commandName}" has no execute() method.`)
         return
       }
 
       try {
         await command.execute(interaction, client)
       } catch (error) {
-        console.error(`Error executing slash command "${interaction.commandName}":`, error)
+        console.error(`[hiei:interactions] Error executing slash command "${interaction.commandName}":`, error)
       }
     }
 
@@ -157,19 +157,19 @@ export async function createInteractionHandler (client, { commandDirectory = './
     if (interaction.isMessageContextMenuCommand()) {
       const command = commands.get(interaction.commandName)
       if (!command) {
-        console.warn(`Message command "${interaction.commandName}" not found.`)
+        console.warn(`[hiei:interactions] Message command "${interaction.commandName}" not found.`)
         return
       }
 
       if (typeof command.execute !== 'function') {
-        console.warn(`Message command "${interaction.commandName}" has no execute() method.`)
+        console.warn(`[hiei:interactions] Message command "${interaction.commandName}" has no execute() method.`)
         return
       }
 
       try {
         await command.execute(interaction, client)
       } catch (error) {
-        console.error(`Error executing message command "${interaction.commandName}":`, error)
+        console.error(`[hiei:interactions] Error executing message command "${interaction.commandName}":`, error)
       }
     }
 
@@ -177,19 +177,19 @@ export async function createInteractionHandler (client, { commandDirectory = './
     if (interaction.isUserContextMenuCommand()) {
       const command = commands.get(interaction.commandName)
       if (!command) {
-        console.warn(`User command "${interaction.commandName}" not found.`)
+        console.warn(`[hiei:interactions] User command "${interaction.commandName}" not found.`)
         return
       }
 
       if (typeof command.execute !== 'function') {
-        console.warn(`User command "${interaction.commandName}" has no execute() method.`)
+        console.warn(`[hiei:interactions] User command "${interaction.commandName}" has no execute() method.`)
         return
       }
 
       try {
         await command.execute(interaction, client)
       } catch (error) {
-        console.error(`Error executing user command "${interaction.commandName}":`, error)
+        console.error(`[hiei:interactions] Error executing user command "${interaction.commandName}":`, error)
       }
     }
 
@@ -197,19 +197,19 @@ export async function createInteractionHandler (client, { commandDirectory = './
     if (interaction.isButton()) {
       const component = components.get(`button:${interaction.customId}`)
       if (!component) {
-        console.warn(`Button component "${interaction.customId}" not found. This warning can be safely ignored for contextual buttons.`)
+        console.warn(`[hiei:interactions] Button component "${interaction.customId}" not found. This warning can be safely ignored for contextual buttons.`)
         return
       }
 
       if (typeof component.execute !== 'function') {
-        console.warn(`Button component "${interaction.customId}" has no execute() method.`)
+        console.warn(`[hiei:interactions] Button component "${interaction.customId}" has no execute() method.`)
         return
       }
 
       try {
         await component.execute(interaction, client)
       } catch (error) {
-        console.error(`Error executing button component "${interaction.customId}":`, error)
+        console.error(`[hiei:interactions] Error executing button component "${interaction.customId}":`, error)
       }
     }
 
@@ -217,19 +217,19 @@ export async function createInteractionHandler (client, { commandDirectory = './
     if (interaction.isAnySelectMenu()) {
       const component = components.get(`select:${interaction.customId}`)
       if (!component) {
-        console.warn(`Select menu component "${interaction.customId}" not found. This warning can be safely ignored for contextual select menus.`)
+        console.warn(`[hiei:interactions] Select menu component "${interaction.customId}" not found. This warning can be safely ignored for contextual select menus.`)
         return
       }
 
       if (typeof component.execute !== 'function') {
-        console.warn(`Select menu component "${interaction.customId}" has no execute() method.`)
+        console.warn(`[hiei:interactions] Select menu component "${interaction.customId}" has no execute() method.`)
         return
       }
 
       try {
         await component.execute(interaction, client)
       } catch (error) {
-        console.error(`Error executing select menu component "${interaction.customId}":`, error)
+        console.error(`[hiei:interactions] Error executing select menu component "${interaction.customId}":`, error)
       }
     }
 
@@ -237,19 +237,19 @@ export async function createInteractionHandler (client, { commandDirectory = './
     if (interaction.isModalSubmit()) {
       const component = components.get(`modal:${interaction.customId}`)
       if (!component) {
-        console.warn(`Modal component "${interaction.customId}" not found. This warning can be safely ignored for contextual modals.`)
+        console.warn(`[hiei:interactions] Modal component "${interaction.customId}" not found. This warning can be safely ignored for contextual modals.`)
         return
       }
 
       if (typeof component.execute !== 'function') {
-        console.warn(`Modal component "${interaction.customId}" has no execute() method.`)
+        console.warn(`[hiei:interactions] Modal component "${interaction.customId}" has no execute() method.`)
         return
       }
 
       try {
         await component.execute(interaction, client)
       } catch (error) {
-        console.error(`Error executing modal component "${interaction.customId}":`, error)
+        console.error(`[hiei:interactions] Error executing modal component "${interaction.customId}":`, error)
       }
     }
   }
@@ -274,7 +274,7 @@ export async function createInteractionHandler (client, { commandDirectory = './
     try {
       remoteCommands = await rest.get(`/applications/${application}/guilds/${guild}/commands`)
     } catch (error) {
-      console.error('Command sync: Failed to fetch remote commands.', error)
+      console.error('[hiei:sync] Failed to fetch remote commands.', error)
     }
 
     const localMap = new Map(localCommands.map(cmd => [cmd.name, cmd]))
@@ -283,7 +283,7 @@ export async function createInteractionHandler (client, { commandDirectory = './
     let needsUpdate = false
 
     // Check for new or modified commands
-    console.log('Command sync: Checking for new or modified commands...')
+    console.log('[hiei:sync] Checking for new or modified commands...')
     for (const [name, local] of localMap) {
       const remote = remoteMap.get(name)
       if (!remote || JSON.stringify(local) !== JSON.stringify(remote)) {
@@ -293,7 +293,7 @@ export async function createInteractionHandler (client, { commandDirectory = './
     }
 
     // Check for deleted commands
-    console.log('Command sync: Checking for deleted commands...')
+    console.log('[hiei:sync] Checking for deleted commands...')
     if (!needsUpdate) {
       for (const name of remoteMap.keys()) {
         if (!localMap.has(name)) {
@@ -304,16 +304,16 @@ export async function createInteractionHandler (client, { commandDirectory = './
     }
 
     if (!needsUpdate) {
-      console.log('Command sync: No changes found.')
+      console.log('[hiei:sync] No changes found.')
       return
     }
 
     try {
-      console.log('Command sync: Changes found. Updating guild commands...')
+      console.log('[hiei:sync] Changes found. Updating guild commands...')
       await rest.put(`/applications/${application}/guilds/${guild}/commands`, { body: localCommands })
-      console.log('Command sync: Guild commands updated successfully.')
+      console.log('[hiei:sync] Guild commands updated successfully.')
     } catch (error) {
-      console.error('Command sync: Failed to sync commands.', error)
+      console.error('[hiei:sync] Failed to sync commands.', error)
     }
   }
 }
