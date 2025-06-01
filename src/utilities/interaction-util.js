@@ -24,7 +24,7 @@ export async function buildSlashCommand (command) {
     if (isValidPermissionFlag(command.defaultMemberPermissions)) {
       data.setDefaultMemberPermissions(command.defaultMemberPermissions)
     } else {
-      throw new Error(`Command ${command.name} has invalid defaultMemberPermissions. Use PermissionFlagsBits.*`)
+      throw new Error(`[hiei:builders] Command ${command.name} has invalid defaultMemberPermissions. Use PermissionFlagsBits.*`)
     }
   }
 
@@ -40,7 +40,7 @@ export async function buildSlashCommand (command) {
 
 export async function buildMessageCommand (command) {
   if (!command.name) {
-    throw new Error('Message command must have a name')
+    throw new Error('[hiei:builders] Message command must have a name')
   }
 
   const data = new ContextMenuCommandBuilder()
@@ -52,7 +52,7 @@ export async function buildMessageCommand (command) {
     if (isValidPermissionFlag(command.defaultMemberPermissions)) {
       data.setDefaultMemberPermissions(command.defaultMemberPermissions)
     } else {
-      throw new Error(`Command ${command.name} has invalid defaultMemberPermissions. Use PermissionFlagsBits.*`)
+      throw new Error(`[hiei:builders] Command ${command.name} has invalid defaultMemberPermissions. Use PermissionFlagsBits.*`)
     }
   }
 
@@ -61,7 +61,7 @@ export async function buildMessageCommand (command) {
 
 export async function buildUserCommand (command) {
   if (!command.name) {
-    throw new Error('User command must have a name')
+    throw new Error('[hiei:builders] User command must have a name')
   }
 
   const data = new ContextMenuCommandBuilder()
@@ -73,7 +73,7 @@ export async function buildUserCommand (command) {
     if (isValidPermissionFlag(command.defaultMemberPermissions)) {
       data.setDefaultMemberPermissions(command.defaultMemberPermissions)
     } else {
-      throw new Error(`Command ${command.name} has invalid defaultMemberPermissions. Use PermissionFlagsBits.*`)
+      throw new Error(`[hiei:builders] Command ${command.name} has invalid defaultMemberPermissions. Use PermissionFlagsBits.*`)
     }
   }
 
@@ -81,9 +81,9 @@ export async function buildUserCommand (command) {
 }
 
 export async function buildButtonComponent (component) {
-  if (!component.id) throw new Error('Button must have an id')
-  if (!component.label && !component.emoji) throw new Error('Button must have a label or emoji')
-  if (!component.style) throw new Error('Button must have a style')
+  if (!component.id) throw new Error('[hiei:builders] Button must have an id')
+  if (!component.label && !component.emoji) throw new Error('[hiei:builders] Button must have a label or emoji')
+  if (!component.style) throw new Error('[hiei:builders] Button must have a style')
 
   const data = new ButtonBuilder()
     .setCustomId(component.id)
@@ -98,9 +98,9 @@ export async function buildButtonComponent (component) {
 }
 
 export async function buildModalComponent (component) {
-  if (!component.id) throw new Error('Modal must have an id')
-  if (!component.title) throw new Error('Modal must have a title')
-  if (!Array.isArray(component.fields) || component.fields.length === 0) throw new Error('Modal must have at least one field')
+  if (!component.id) throw new Error('[hiei:builders] Modal must have an id')
+  if (!component.title) throw new Error('[hiei:builders] Modal must have a title')
+  if (!Array.isArray(component.fields) || component.fields.length === 0) throw new Error('[hiei:builders] Modal must have at least one field')
 
   const data = new ModalBuilder()
     .setCustomId(component.id)
@@ -125,8 +125,8 @@ export async function buildModalComponent (component) {
 }
 
 export async function buildSelectComponent (component) {
-  if (!component.id) throw new Error('Select menu must have an id')
-  if (!Array.isArray(component.options) || component.options.length === 0) throw new Error('Select menu must have at least one option')
+  if (!component.id) throw new Error('[hiei:builders] Select menu must have an id')
+  if (!Array.isArray(component.options) || component.options.length === 0) throw new Error('[hiei:builders] Select menu must have at least one option')
 
   let data
 
@@ -267,6 +267,6 @@ function buildOption (data, option) {
       data.addSubcommandGroup(group => buildSubcommandGroup(group, option))
       break
     default:
-      throw new Error(`Unknown option type ${option.type} in command ${data.name}`)
+      throw new Error(`[hiei:builders] Unknown option type ${option.type} in command ${data.name}`)
   }
 }
