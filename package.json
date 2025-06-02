@@ -17,7 +17,7 @@
     "src"
   ],
   "engines": {
-    "node": ">=16.9.0"
+    "node": ">=20.18.0"
   },
   "scripts": {
     "lint": "standard | snazzy",
@@ -26,10 +26,9 @@
     "test": "echo \"No test specified\""
   },
   "devDependencies": {
-    "discord.js": "^14.12.1",
-    "dotenv": "^16.0.1",
+    "discord.js": "^14.19.3",
     "ms": "^2.1.3",
     "snazzy": "^9.0.0",
-    "standard": "^17.0.0"
+    "standard": "^17.1.2"
   }
 }
