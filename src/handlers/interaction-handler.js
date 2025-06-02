@@ -1,8 +1,9 @@
+import { existsSync } from 'node:fs'
 import { pathToFileURL } from 'node:url'
 import { resolve } from 'node:path'
-import { existsSync } from 'node:fs'
 import { Collection, REST } from 'discord.js'
 import { discoverFiles } from '../utilities/file-util.js'
+import { dispatch, Events } from './dispatch.js'
 import {
   buildSlashCommand,
   buildMessageCommand,
@@ -20,15 +21,14 @@ export async function createInteractionHandler (client, { commandDirectory = './
   const componentsPath = resolve(process.cwd(), componentDirectory)
 
   if (!existsSync(commandsPath)) {
-    console.error(`[hiei:commands] There is no command directory. Please create one at ${commandsPath} or define a custom path in your interaction handler.`)
+    console.error(`[hiei:commands] There is no commands directory. Please create one at ${commandsPath} or define a custom path in your interaction handler.`)
     process.exit(1)
   }
 
   const componentsEnabled = existsSync(componentsPath)
 
   if (!componentsEnabled) {
-    console.warn('[hiei:components] There is no component directory. Components will be disabled.')
-    process.exit(1)
+    console.warn('[hiei:components] There is no components directory. Components will be disabled.')
   }
 
   client.once('ready', async () => {
@@ -46,7 +46,7 @@ export async function createInteractionHandler (client, { commandDirectory = './
   async function loadCommands (directory) {
     const files = await discoverFiles(directory)
     if (!files.length) {
-      return console.warn(`[hiei:commands] Command directory is empty: ${directory}`)
+      return console.warn(`[hiei:commands] Commands directory is empty: ${directory}`)
     }
 
     for (const file of files) {
@@ -80,7 +80,7 @@ export async function createInteractionHandler (client, { commandDirectory = './
   async function loadComponents (directory) {
     const files = await discoverFiles(directory)
     if (!files.length) {
-      return console.warn(`[hiei:components] Component directory is empty: ${directory}`)
+      return console.warn(`[hiei:components] Components directory is empty: ${directory}`)
     }
 
     for (const file of files) {
@@ -126,10 +126,13 @@ export async function createInteractionHandler (client, { commandDirectory = './
       }
 
       try {
+        dispatch.emit(Events.INTERACTION_STARTED, interaction)
         const choices = await command.autocomplete(interaction)
         await interaction.respond(choices)
+        dispatch.emit(Events.INTERACTION_COMPLETED, interaction)
       } catch (error) {
         console.error(`[hiei:interactions] Autocomplete for command "${interaction.commandName}" encountered an error:`, error)
+        dispatch.emit(Events.INTERACTION_FAILED, interaction, error)
       }
     }
 
@@ -147,9 +150,12 @@ export async function createInteractionHandler (client, { commandDirectory = './
       }
 
       try {
+        dispatch.emit(Events.INTERACTION_STARTED, interaction)
         await command.execute({ interaction, client, components })
+        dispatch.emit(Events.INTERACTION_COMPLETED, interaction)
       } catch (error) {
         console.error(`[hiei:interactions] Error executing slash command "${interaction.commandName}":`, error)
+        dispatch.emit(Events.INTERACTION_FAILED, interaction, error)
       }
     }
 
