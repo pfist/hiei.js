@@ -147,7 +147,7 @@ export async function createInteractionHandler (client, { commandDirectory = './
       }
 
       try {
-        await command.execute(interaction, client)
+        await command.execute({ interaction, client, components })
       } catch (error) {
         console.error(`[hiei:interactions] Error executing slash command "${interaction.commandName}":`, error)
       }
@@ -167,7 +167,8 @@ export async function createInteractionHandler (client, { commandDirectory = './
       }
 
       try {
-        await command.execute(interaction, interaction.options.getMessage('message'), client)
+        const message = interaction.options.getMessage('message')
+        await command.execute({ interaction, message, client, components })
       } catch (error) {
         console.error(`[hiei:interactions] Error executing message command "${interaction.commandName}":`, error)
       }
@@ -187,7 +188,8 @@ export async function createInteractionHandler (client, { commandDirectory = './
       }
 
       try {
-        await command.execute(interaction, interaction.options.getUser('user'), client)
+        const user = interaction.options.getUser('user')
+        await command.execute({ interaction, user, client, components })
       } catch (error) {
         console.error(`[hiei:interactions] Error executing user command "${interaction.commandName}":`, error)
       }
@@ -207,7 +209,7 @@ export async function createInteractionHandler (client, { commandDirectory = './
       }
 
       try {
-        await component.execute(interaction, client)
+        await component.execute({ interaction, client })
       } catch (error) {
         console.error(`[hiei:interactions] Error executing button component "${interaction.customId}":`, error)
       }
@@ -227,7 +229,7 @@ export async function createInteractionHandler (client, { commandDirectory = './
       }
 
       try {
-        await component.execute(interaction, client)
+        await component.execute({ interaction, client })
       } catch (error) {
         console.error(`[hiei:interactions] Error executing select menu component "${interaction.customId}":`, error)
       }
@@ -247,7 +249,7 @@ export async function createInteractionHandler (client, { commandDirectory = './
       }
 
       try {
-        await component.execute(interaction, client)
+        await component.execute({ interaction, client })
       } catch (error) {
         console.error(`[hiei:interactions] Error executing modal component "${interaction.customId}":`, error)
       }

@@ -3,7 +3,7 @@ export default {
   id: 'feedbackButton',
   label: 'Submit Feedback',
   style: 'Primary',
-  async execute (interaction) {
+  async execute ({ interaction }) {
     await interaction.reply({ content: 'Thanks for pitching in.' })
   }
 }
