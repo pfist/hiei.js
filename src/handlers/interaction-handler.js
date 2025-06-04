@@ -126,13 +126,16 @@ export async function createInteractionHandler (client, { commandDirectory = './
       }
 
       try {
-        dispatch.emit(Events.INTERACTION_STARTED, interaction)
+        dispatch.emit(Events.Interaction.Started, interaction)
         const choices = await command.autocomplete(interaction)
         await interaction.respond(choices)
-        dispatch.emit(Events.INTERACTION_COMPLETED, interaction)
+        dispatch.emit(Events.Interaction.Completed, interaction)
       } catch (error) {
         console.error(`[hiei:interactions] Autocomplete for command "${interaction.commandName}" encountered an error:`, error)
-        dispatch.emit(Events.INTERACTION_FAILED, interaction, error)
+        dispatch.emit(Events.Interaction.Failed, {
+          interaction,
+          error
+        })
       }
     }
 
@@ -150,12 +153,15 @@ export async function createInteractionHandler (client, { commandDirectory = './
       }
 
       try {
-        dispatch.emit(Events.INTERACTION_STARTED, interaction)
+        dispatch.emit(Events.Interaction.Started, interaction)
         await command.execute({ interaction, client, components })
-        dispatch.emit(Events.INTERACTION_COMPLETED, interaction)
+        dispatch.emit(Events.Interaction.Completed, interaction)
       } catch (error) {
         console.error(`[hiei:interactions] Error executing slash command "${interaction.commandName}":`, error)
-        dispatch.emit(Events.INTERACTION_FAILED, interaction, error)
+        dispatch.emit(Events.Interaction.Failed, {
+          interaction,
+          error
+        })
       }
     }
 
@@ -174,9 +180,15 @@ export async function createInteractionHandler (client, { commandDirectory = './
 
       try {
         const message = interaction.options.getMessage('message')
+        dispatch.emit(Events.Interaction.Started, interaction)
         await command.execute({ interaction, message, client, components })
+        dispatch.emit(Events.Interaction.Completed, interaction)
       } catch (error) {
         console.error(`[hiei:interactions] Error executing message command "${interaction.commandName}":`, error)
+        dispatch.emit(Events.Interaction.Failed, {
+          interaction,
+          error
+        })
       }
     }
 
@@ -195,9 +207,15 @@ export async function createInteractionHandler (client, { commandDirectory = './
 
       try {
         const user = interaction.options.getUser('user')
+        dispatch.emit(Events.Interaction.Started, interaction)
         await command.execute({ interaction, user, client, components })
+        dispatch.emit(Events.Interaction.Completed, interaction)
       } catch (error) {
         console.error(`[hiei:interactions] Error executing user command "${interaction.commandName}":`, error)
+        dispatch.emit(Events.Interaction.Failed, {
+          interaction,
+          error
+        })
       }
     }
 
@@ -215,9 +233,15 @@ export async function createInteractionHandler (client, { commandDirectory = './
       }
 
       try {
+        dispatch.emit(Events.Interaction.Started, interaction)
         await component.execute({ interaction, client })
+        dispatch.emit(Events.Interaction.Completed, interaction)
       } catch (error) {
         console.error(`[hiei:interactions] Error executing button component "${interaction.customId}":`, error)
+        dispatch.emit(Events.Interaction.Failed, {
+          interaction,
+          error
+        })
       }
     }
 
@@ -235,9 +259,15 @@ export async function createInteractionHandler (client, { commandDirectory = './
       }
 
       try {
+        dispatch.emit(Events.Interaction.Started, interaction)
         await component.execute({ interaction, client })
+        dispatch.emit(Events.Interaction.Completed, interaction)
       } catch (error) {
         console.error(`[hiei:interactions] Error executing select menu component "${interaction.customId}":`, error)
+        dispatch.emit(Events.Interaction.Failed, {
+          interaction,
+          error
+        })
       }
     }
 
@@ -255,9 +285,15 @@ export async function createInteractionHandler (client, { commandDirectory = './
       }
 
       try {
+        dispatch.emit(Events.Interaction.Started, interaction)
         await component.execute({ interaction, client })
+        dispatch.emit(Events.Interaction.Completed, interaction)
       } catch (error) {
         console.error(`[hiei:interactions] Error executing modal component "${interaction.customId}":`, error)
+        dispatch.emit(Events.Interaction.Failed, {
+          interaction,
+          error
+        })
       }
     }
   }
@@ -280,6 +316,11 @@ export async function createInteractionHandler (client, { commandDirectory = './
     const guild = process.env.GUILD
     const localCommands = Array.from(commands.values()).map(cmd => cmd.data.toJSON())
     let remoteCommands
+
+    dispatch.emit(Events.Sync.Started, {
+      guild: guild.id,
+      commands: localCommands
+    })
 
     try {
       remoteCommands = await rest.get(`/applications/${application}/guilds/${guild}/commands`)
@@ -326,8 +367,18 @@ export async function createInteractionHandler (client, { commandDirectory = './
       console.log('[hiei:sync] Changes found. Updating guild commands...')
       await rest.put(`/applications/${application}/guilds/${guild}/commands`, { body: localCommands })
       console.log('[hiei:sync] Guild commands updated successfully.')
+      dispatch.emit(Events.Sync.Completed, {
+        guild: guild.id,
+        remote: remoteCommands
+      })
     } catch (error) {
       console.error('[hiei:sync] Failed to sync commands.', error)
+      dispatch.emit(Events.Sync.Failed, {
+        guild: guild.id,
+        local: localCommands,
+        remote: remoteCommands,
+        error
+      })
     }
   }
 }

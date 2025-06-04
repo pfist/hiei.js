@@ -1,7 +1,7 @@
 export default {
-  name: 'interactionStarted',
+  name: 'interaction:started',
   emitter: 'hiei',
   execute (interaction) {
-    console.log(`[hiei:events] Interaction ${interaction.commandName} started in #${interaction.channel.name} by ${interaction.user.username} (${interaction.user.id}).`)
+    console.log(`[hiei:events] Interaction ${interaction.commandName} started.`)
   }
 }
