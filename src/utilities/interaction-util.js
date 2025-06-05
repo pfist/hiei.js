@@ -7,6 +7,7 @@ import {
   PermissionFlagsBits,
   SlashCommandBuilder,
   StringSelectMenuBuilder,
+  StringSelectMenuOptionBuilder,
   UserSelectMenuBuilder,
   RoleSelectMenuBuilder,
   ChannelSelectMenuBuilder,
@@ -154,7 +155,16 @@ export async function buildSelectComponent (component) {
   if (component.max !== undefined) data.setMaxValues(component.maxValues)
   if (component.disabled !== undefined) data.setDisabled(component.disabled)
   if (data instanceof StringSelectMenuBuilder && Array.isArray(component.options)) {
-    data.addOptions(component.options)
+    data.addOptions(
+      component.options.map(o =>
+        new StringSelectMenuOptionBuilder()
+          .setLabel(o.label)
+          .setValue(o.value)
+          .setDescription(o.description || '')
+          .setDefault(o.default || false)
+          .setEmoji(o.emoji)
+      )
+    )
   }
 
   return data
