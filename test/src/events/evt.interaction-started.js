@@ -2,6 +2,6 @@ export default {
   name: 'interaction:started',
   emitter: 'hiei',
   execute (interaction) {
-    console.log(`[hiei:events] Interaction ${interaction.commandName} started.`)
+    console.log(`[hiei:events] Interaction ${interaction.commandName || interaction.customId} started.`)
   }
 }
