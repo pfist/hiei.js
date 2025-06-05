@@ -144,8 +144,11 @@ export async function buildSelectComponent (component) {
     case 'mentionable':
       data = new MentionableSelectMenuBuilder()
       break
-    default:
+    case 'string':
       data = new StringSelectMenuBuilder()
+      break
+    default:
+      throw new Error('[hiei:setup] Select menu must have a type of string, user, channel, role, or mentionable.')
   }
 
   data.setCustomId(component.id)
