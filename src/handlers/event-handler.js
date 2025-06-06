@@ -23,8 +23,8 @@ export async function createEventHandler (client, { eventDirectory = './src/even
     try {
       const { default: listener } = await import(pathToFileURL(file))
 
-      if (!listener || !listener.name || !listener.emitter || typeof listener.execute !== 'function') {
-        log.warn('setup', `Invalid event listener is missing name, emitter, and/or execute method: ${file}`)
+      if (!listener || !listener.event || !listener.emitter || typeof listener.execute !== 'function') {
+        log.warn('setup', `Invalid event listener is missing event name, emitter, and/or execute method: ${file}`)
         continue
       }
 
@@ -35,9 +35,9 @@ export async function createEventHandler (client, { eventDirectory = './src/even
       }
 
       if (listener.once) {
-        emitter.once(listener.name, (...args) => listener.execute(...args, client))
+        emitter.once(listener.event, (...args) => listener.execute(...args, client))
       } else {
-        emitter.on(listener.name, (...args) => listener.execute(...args, client))
+        emitter.on(listener.event, (...args) => listener.execute(...args, client))
       }
     } catch (error) {
       log.error('setup', `Failed to load event listener: ${file}\n`, error)

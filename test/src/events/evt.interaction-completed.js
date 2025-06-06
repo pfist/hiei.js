@@ -1,5 +1,5 @@
 export default {
-  name: 'interaction:completed',
+  event: 'interaction:completed',
   emitter: 'hiei',
   execute (interaction) {
     const start = interaction.createdAt

@@ -1,5 +1,5 @@
 export default {
-  name: 'ready',
+  event: 'ready',
   emitter: 'client',
   once: true,
   execute (client) {
