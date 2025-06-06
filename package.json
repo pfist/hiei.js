@@ -1,7 +1,7 @@
 {
   "name": "hiei.js",
   "version": "1.1.0",
-  "description": "A tiny bot framework for discord.js",
+  "description": "A tiny framework for bespoke, single-guild bots powered by discord.js.",
   "keywords": [
     "discord",
     "discord.js",
@@ -21,7 +21,6 @@
   },
   "scripts": {
     "lint": "standard | snazzy",
-    "start": "cd test && node -r dotenv/config bot",
     "dev": "bun test/src/bot.js",
     "test": "echo \"No test specified\""
   },
