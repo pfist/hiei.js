@@ -289,6 +289,6 @@ function buildOption (data, option) {
       data.addSubcommandGroup(group => buildSubcommandGroup(group, option))
       break
     default:
-      throw new Error(`[hiei:builders] Unknown option type ${option.type} in command ${data.name}`)
+      throw new Error(`[hiei:setup] Unknown option type ${option.type} in command ${data.name}`)
   }
 }
