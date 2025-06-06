@@ -188,8 +188,8 @@ function buildSubcommandGroup (group, option) {
   group
     .setName(option.name)
     .setDescription(option.description)
-  if (Array.isArray(option.options)) {
-    for (const subcommand of option.options) {
+  if (Array.isArray(option.commands)) {
+    for (const subcommand of option.commands) {
       buildOption(group, subcommand)
     }
   }
