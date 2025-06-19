@@ -87,13 +87,13 @@ export async function buildButtonComponent (component) {
   if (!component.style) throw new Error('[hiei:setup] Button must have a style')
 
   const data = new ButtonBuilder()
-    .setCustomId(component.id)
     .setStyle(component.style)
 
+  if (component.style !== 'Link') data.setCustomId(component.id)
   if (component.label) data.setLabel(component.label)
   if (component.emoji) data.setEmoji(component.emoji)
   if (component.disabled) data.setDisabled(component.disabled)
-  if (component.url && component.style === 'LINK') data.setURL(component.url)
+  if (component.url && component.style === 'Link') data.setURL(component.url)
 
   return data
 }
