@@ -14,7 +14,11 @@ import {
   buildSelectComponent
 } from '../utilities/interaction-util.js'
 
-export async function createInteractionHandler (client, { commandDirectory = './src/commands', componentDirectory = './src/components' }) {
+export async function createInteractionHandler(client, {
+  commandDirectory = './src/commands',
+  componentDirectory = './src/components',
+  debug = false
+}) {
   const commands = new Collection()
   const components = new Collection()
 
@@ -336,9 +340,11 @@ export async function createInteractionHandler (client, { commandDirectory = './
 
     let needsUpdate = false
 
-    // DEBUG - Uncomment these to if you are debuygging command sync
-    // console.debug('Local:', JSON.stringify(Object.fromEntries(localMap), null, 2))
-    // console.debug('Remote:', JSON.stringify(Object.fromEntries(remoteMap), null, 2))
+    if (debug) {
+      console.debug(`[hiei:debug] Compare local and remote command data below if sync is misbehaving`)
+      console.debug('Local:', JSON.stringify(Object.fromEntries(localMap), null, 2))
+      console.debug('Remote:', JSON.stringify(Object.fromEntries(remoteMap), null, 2))
+    }
 
     // Check for new or modified commands
     log.info('sync', 'Checking for new or modified commands...')
