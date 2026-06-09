@@ -368,7 +368,6 @@ export async function createInteractionHandler (client, {
       }
     } else {
       log.info('sync', 'No changes found.')
-      return
     }
   }
 }
