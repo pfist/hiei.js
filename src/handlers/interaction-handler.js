@@ -34,7 +34,7 @@ export async function createInteractionHandler (client, { commandDirectory = './
     log.warn('setup', 'There is no components directory. Components will be disabled.')
   }
 
-  client.once('ready', async () => {
+  client.once('clientReady', async () => {
     await loadCommands(commandsPath)
 
     if (componentsEnabled) {
