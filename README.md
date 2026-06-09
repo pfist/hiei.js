@@ -11,7 +11,7 @@ A tiny framework for bespoke, single-guild bots powered by discord.js.
 - Zero dependencies
 
 ## Installation
-hiei.js requires the latest version of Node.js 20 and discord.js 14. It also works with Bun.
+hiei.js requires Bun 1.3.14 and discord.js 14.26.x.
 
 ```
 bun add discord.js
