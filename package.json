@@ -1,6 +1,6 @@
 {
   "name": "hiei.js",
-  "version": "2.0.0-beta.2",
+  "version": "2.0.0-beta.3",
   "description": "A tiny framework for bespoke, single-guild bots powered by discord.js.",
   "keywords": [
     "discord",
@@ -25,7 +25,7 @@
     "test": "echo \"No test specified\""
   },
   "devDependencies": {
-    "discord.js": "^14.19.3",
+    "discord.js": "^14.26.4",
     "ms": "^2.1.3",
     "snazzy": "^9.0.0",
     "standard": "^17.1.2"
