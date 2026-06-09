@@ -335,10 +335,10 @@ export async function createInteractionHandler (client, {
       log.error('sync', 'Failed to fetch remote commands.', error)
     }
 
-    const localMap = new Map(localCommands.map(cmd => [cmd.name, normalizeCommand(cmd)]))
-    const remoteMap = new Map(remoteCommands.map(cmd => [cmd.name, normalizeCommand(cmd)]))
+    const localMap = new Map(localCommands.map(cmd => [cmd.name, normalizeCommand(cmd)]).sort())
+    const remoteMap = new Map(remoteCommands.map(cmd => [cmd.name, normalizeCommand(cmd)]).sort())
 
-    let needsUpdate = false
+    const needsUpdate = !Bun.deepEquals(localMap, remoteMap)
 
     if (debug) {
       console.debug('[hiei:debug] Compare local and remote command data below if sync is misbehaving')
@@ -346,48 +346,29 @@ export async function createInteractionHandler (client, {
       console.debug('Remote:', JSON.stringify(Object.fromEntries(remoteMap), null, 2))
     }
 
-    // Check for new or modified commands
-    log.info('sync', 'Checking for new or modified commands...')
-    for (const [name, local] of localMap) {
-      const remote = remoteMap.get(name)
-      if (!remote || JSON.stringify(local) !== JSON.stringify(remote)) {
-        needsUpdate = true
-        break
+    // Check for modified command data
+    log.info('sync', 'Checking for changes in command data...')
+    if (needsUpdate) {
+      try {
+        log.info('sync', 'Changes found. Updating guild commands...')
+        await rest.put(`/applications/${application}/guilds/${guild}/commands`, { body: localCommands })
+        log.info('sync', 'Guild commands updated successfully.')
+        dispatch.emit(Events.Sync.Completed, {
+          guild: guild.id,
+          remote: remoteCommands
+        })
+      } catch (error) {
+        log.error('sync', 'Failed to sync commands.', error)
+        dispatch.emit(Events.Sync.Failed, {
+          guild: guild.id,
+          local: localCommands,
+          remote: remoteCommands,
+          error
+        })
       }
-    }
-
-    // Check for deleted commands
-    log.info('sync', 'Checking for deleted commands...')
-    if (!needsUpdate) {
-      for (const name of remoteMap.keys()) {
-        if (!localMap.has(name)) {
-          needsUpdate = true
-          break
-        }
-      }
-    }
-
-    if (!needsUpdate) {
+    } else {
       log.info('sync', 'No changes found.')
       return
-    }
-
-    try {
-      log.info('sync', 'Changes found. Updating guild commands...')
-      await rest.put(`/applications/${application}/guilds/${guild}/commands`, { body: localCommands })
-      log.info('sync', 'Guild commands updated successfully.')
-      dispatch.emit(Events.Sync.Completed, {
-        guild: guild.id,
-        remote: remoteCommands
-      })
-    } catch (error) {
-      log.error('sync', 'Failed to sync commands.', error)
-      dispatch.emit(Events.Sync.Failed, {
-        guild: guild.id,
-        local: localCommands,
-        remote: remoteCommands,
-        error
-      })
     }
   }
 }
