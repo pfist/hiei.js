@@ -310,7 +310,7 @@ export async function createInteractionHandler (client, {
       type: command.type !== undefined ? command.type : 1,
       name: command.name,
       description: command.description ? command.description : '',
-      defaultMemberPermissions: command.defaultMemberPermissions
+      defaultMemberPermissions: command.permissions
     }
 
     if (command.options !== undefined && command.options.length > 0) normalized.options = command.options

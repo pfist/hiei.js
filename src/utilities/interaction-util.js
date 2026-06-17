@@ -21,11 +21,11 @@ export async function buildSlashCommand (command) {
     .setDescription(command.description)
 
   // Handle default member permissions
-  if (command.defaultMemberPermissions !== undefined) {
-    if (isValidPermissionFlag(command.defaultMemberPermissions)) {
-      data.setDefaultMemberPermissions(command.defaultMemberPermissions)
+  if (command.permissions !== undefined) {
+    if (isValidPermissionFlag(command.permissions)) {
+      data.setDefaultMemberPermissions(command.permissions)
     } else {
-      throw new Error(`[hiei:setup] Command ${command.name} has invalid defaultMemberPermissions. Use PermissionFlagsBits.*`)
+      throw new Error(`[hiei:setup] Command ${command.name} has invalid permissions. Use PermissionFlagsBits.*`)
     }
   }
 
@@ -49,11 +49,11 @@ export async function buildMessageCommand (command) {
     .setType(ApplicationCommandType.Message)
 
   // Handle default member permissions
-  if (command.defaultMemberPermissions !== undefined) {
-    if (isValidPermissionFlag(command.defaultMemberPermissions)) {
-      data.setDefaultMemberPermissions(command.defaultMemberPermissions)
+  if (command.permissions !== undefined) {
+    if (isValidPermissionFlag(command.permissions)) {
+      data.setDefaultMemberPermissions(command.permissions)
     } else {
-      throw new Error(`[hiei:setup] Command ${command.name} has invalid defaultMemberPermissions. Use PermissionFlagsBits.*`)
+      throw new Error(`[hiei:setup] Command ${command.name} has invalid permissions. Use PermissionFlagsBits.*`)
     }
   }
 
@@ -70,11 +70,11 @@ export async function buildUserCommand (command) {
     .setType(ApplicationCommandType.User)
 
   // Handle default member permissions
-  if (command.defaultMemberPermissions !== undefined) {
-    if (isValidPermissionFlag(command.defaultMemberPermissions)) {
-      data.setDefaultMemberPermissions(command.defaultMemberPermissions)
+  if (command.permissions !== undefined) {
+    if (isValidPermissionFlag(command.permissions)) {
+      data.setDefaultMemberPermissions(command.permissions)
     } else {
-      throw new Error(`[hiei:setup] Command ${command.name} has invalid defaultMemberPermissions. Use PermissionFlagsBits.*`)
+      throw new Error(`[hiei:setup] Command ${command.name} has invalid permissions. Use PermissionFlagsBits.*`)
     }
   }
 
