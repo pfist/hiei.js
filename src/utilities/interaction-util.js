@@ -207,6 +207,7 @@ function buildOption (data, option) {
           .setName(option.name)
           .setDescription(option.description)
           .setRequired(option.required ?? false)
+        return o
       })
       break
     case 'boolean':
@@ -215,6 +216,7 @@ function buildOption (data, option) {
           .setName(option.name)
           .setDescription(option.description)
           .setRequired(option.required ?? false)
+        return o
       })
       break
     case 'channel':
@@ -246,6 +248,7 @@ function buildOption (data, option) {
           .setName(option.name)
           .setDescription(option.description)
           .setRequired(option.required ?? false)
+        return o
       })
       break
     case 'number':
