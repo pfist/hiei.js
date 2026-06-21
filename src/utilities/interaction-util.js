@@ -1,18 +1,18 @@
 import {
-  ApplicationCommandType,
   ActionRowBuilder,
+  ApplicationCommandType,
   ButtonBuilder,
+  ChannelSelectMenuBuilder,
   ContextMenuCommandBuilder,
+  MentionableSelectMenuBuilder,
   ModalBuilder,
   PermissionFlagsBits,
+  RoleSelectMenuBuilder,
   SlashCommandBuilder,
   StringSelectMenuBuilder,
   StringSelectMenuOptionBuilder,
-  UserSelectMenuBuilder,
-  RoleSelectMenuBuilder,
-  ChannelSelectMenuBuilder,
-  MentionableSelectMenuBuilder,
-  TextInputBuilder
+  TextInputBuilder,
+  UserSelectMenuBuilder
 } from 'discord.js'
 
 export async function buildSlashCommand (command) {
@@ -182,6 +182,8 @@ function buildSubcommand (subcommand, option) {
       buildOption(subcommand, subcommandOption)
     }
   }
+
+  return subcommand
 }
 
 function buildSubcommandGroup (group, option) {
@@ -193,6 +195,8 @@ function buildSubcommandGroup (group, option) {
       buildOption(group, subcommand)
     }
   }
+
+  return group
 }
 
 async function isValidPermissionFlag (value) {
@@ -202,22 +206,18 @@ async function isValidPermissionFlag (value) {
 function buildOption (data, option) {
   switch (option.type) {
     case 'attachment':
-      data.addAttachmentOption(o => {
+      data.addAttachmentOption(o =>
         o
           .setName(option.name)
           .setDescription(option.description)
-          .setRequired(option.required ?? false)
-        return o
-      })
+          .setRequired(option.required ?? false))
       break
     case 'boolean':
-      data.addBooleanOption(o => {
+      data.addBooleanOption(o =>
         o
           .setName(option.name)
           .setDescription(option.description)
-          .setRequired(option.required ?? false)
-        return o
-      })
+          .setRequired(option.required ?? false))
       break
     case 'channel':
       data.addChannelOption(o => {
@@ -243,13 +243,11 @@ function buildOption (data, option) {
       })
       break
     case 'mentionable':
-      data.addMentionableOption(o => {
+      data.addMentionableOption(o =>
         o
           .setName(option.name)
           .setDescription(option.description)
-          .setRequired(option.required ?? false)
-        return o
-      })
+          .setRequired(option.required ?? false))
       break
     case 'number':
       data.addNumberOption(o => {
@@ -265,12 +263,11 @@ function buildOption (data, option) {
       })
       break
     case 'role':
-      data.addRoleOption(o => {
+      data.addRoleOption(o =>
         o
           .setName(option.name)
           .setDescription(option.description)
-          .setRequired(option.required ?? false)
-      })
+          .setRequired(option.required ?? false))
       break
     case 'string':
       data.addStringOption(o => {
@@ -284,6 +281,13 @@ function buildOption (data, option) {
         if (option.max) o.setMaxLength(option.max)
         return o
       })
+      break
+    case 'user':
+      data.addUserOption(o =>
+        o
+          .setName(option.name)
+          .setDescription(option.description)
+          .setRequired(option.required ?? false))
       break
     case 'subcommand':
       data.addSubcommand(sub => buildSubcommand(sub, option))
