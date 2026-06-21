@@ -1,13 +1,13 @@
 import { existsSync } from 'node:fs'
-import { pathToFileURL } from 'node:url'
 import { resolve } from 'node:path'
+import { pathToFileURL } from 'node:url'
 import { discoverFiles } from '../utilities/file-util.js'
-import { dispatch } from './dispatch.js'
 import * as log from '../utilities/log-util.js'
+import { dispatch } from './dispatch.js'
 
 export async function createEventHandler (client, { eventDirectory = './src/events' }) {
   const eventsPath = resolve(process.cwd(), eventDirectory)
-  const eventsPathRelative = eventsPath.startsWith(process.cwd()) ? '.' + eventsPath.slice(process.cwd().length) : eventsPath
+  const eventsPathRelative = eventsPath.startsWith(process.cwd()) ? `.${eventsPath.slice(process.cwd().length)}` : eventsPath
 
   if (!existsSync(eventsPath)) {
     log.warn('setup', 'There is no events directory. Event listeners will be disabled.')
@@ -23,7 +23,7 @@ export async function createEventHandler (client, { eventDirectory = './src/even
     try {
       const { default: listener } = await import(pathToFileURL(file))
 
-      if (!listener || !listener.event || !listener.emitter || typeof listener.execute !== 'function') {
+      if (!listener?.event || !listener.emitter || typeof listener.execute !== 'function') {
         log.warn('setup', `Invalid event listener is missing event name, emitter, and/or execute method: ${file}`)
         continue
       }
