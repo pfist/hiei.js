@@ -1,18 +1,11 @@
 import { existsSync } from 'node:fs'
-import { pathToFileURL } from 'node:url'
 import { resolve } from 'node:path'
+import { pathToFileURL } from 'node:url'
 import { Collection, REST } from 'discord.js'
 import { discoverFiles } from '../utilities/file-util.js'
-import { dispatch, Events } from './dispatch.js'
+import * as util from '../utilities/interaction-util.js'
 import * as log from '../utilities/log-util.js'
-import {
-  buildSlashCommand,
-  buildMessageCommand,
-  buildUserCommand,
-  buildButtonComponent,
-  buildModalComponent,
-  buildSelectComponent
-} from '../utilities/interaction-util.js'
+import { dispatch, Events } from './dispatch.js'
 
 export async function createInteractionHandler (client, {
   commandDirectory = './src/commands',
@@ -23,9 +16,9 @@ export async function createInteractionHandler (client, {
   const components = new Collection()
 
   const commandsPath = resolve(process.cwd(), commandDirectory)
-  const commandsPathRelative = commandsPath.startsWith(process.cwd()) ? '.' + commandsPath.slice(process.cwd().length) : commandsPath
+  const commandsPathRelative = commandsPath.startsWith(process.cwd()) ? `.${commandsPath.slice(process.cwd().length)}` : commandsPath
   const componentsPath = resolve(process.cwd(), componentDirectory)
-  const componentsPathRelative = componentsPath.startsWith(process.cwd()) ? '.' + componentsPath.slice(process.cwd().length) : componentsPath
+  const componentsPathRelative = componentsPath.startsWith(process.cwd()) ? `.${componentsPath.slice(process.cwd().length)}` : componentsPath
 
   if (!existsSync(commandsPath)) {
     log.error('setup', `There is no commands directory. Please create one at ${commandsPathRelative} or define a custom path in your interaction handler.`)
@@ -63,13 +56,13 @@ export async function createInteractionHandler (client, {
 
         switch (command.interaction) {
           case 'slash':
-            data = await buildSlashCommand(command)
+            data = await util.buildSlashCommand(command)
             break
           case 'message':
-            data = await buildMessageCommand(command)
+            data = await util.buildMessageCommand(command)
             break
           case 'user':
-            data = await buildUserCommand(command)
+            data = await util.buildUserCommand(command)
             break
           default:
             throw new Error(`[hiei:setup] Unknown command interaction type: ${command.interaction}`)
@@ -97,13 +90,13 @@ export async function createInteractionHandler (client, {
 
         switch (component.interaction) {
           case 'button':
-            data = await buildButtonComponent(component)
+            data = await util.buildButtonComponent(component)
             break
           case 'modal':
-            data = await buildModalComponent(component)
+            data = await util.buildModalComponent(component)
             break
           case 'select':
-            data = await buildSelectComponent(component)
+            data = await util.buildSelectComponent(component)
             break
           default:
             throw new Error(`[hiei:setup] Unknown component interaction type ${component.interaction} in file ${file}`)
