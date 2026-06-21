@@ -4,7 +4,7 @@ export default {
   interaction: 'slash',
   name: 'tea',
   description: 'Create a tea selector',
-  defaultMemberPermissions: PermissionFlagsBits.SendMessages,
+  permissions: PermissionFlagsBits.SendMessages,
   async execute ({ interaction, components }) {
     const selector = components.get('select:tea-selector').data
     const button = components.get('button:submit-feedback').data

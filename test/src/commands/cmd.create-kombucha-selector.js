@@ -13,7 +13,7 @@ export default {
   interaction: 'slash',
   name: 'kombucha',
   description: 'Create a kombucha selector',
-  defaultMemberPermissions: PermissionFlagsBits.SendMessages,
+  permissions: PermissionFlagsBits.SendMessages,
   async execute ({ interaction, components }) {
     const selector = new StringSelectMenuBuilder()
       .setCustomId('kombucha-selector')
