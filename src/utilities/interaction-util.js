@@ -192,23 +192,23 @@ async function isValidPermissionFlag (value) {
   return Object.values(PermissionFlagsBits).includes(value)
 }
 
-function buildOption (data, option) {
-  switch (option.type) {
-    case 'attachment':
+function buildOption(data, option) {
+  const optionBuilders = {
+    'attachment': (data, option) => {
       data.addAttachmentOption(o =>
         o
           .setName(option.name)
           .setDescription(option.description)
           .setRequired(option.required ?? false))
-      break
-    case 'boolean':
+    },
+    'boolean': (data, option) => {
       data.addBooleanOption(o =>
         o
           .setName(option.name)
           .setDescription(option.description)
           .setRequired(option.required ?? false))
-      break
-    case 'channel':
+    },
+    'channel': (data, option) => {
       data.addChannelOption(o => {
         o
           .setName(option.name)
@@ -217,8 +217,8 @@ function buildOption (data, option) {
         if (o.types) o.addChannelTypes(option.types)
         return o
       })
-      break
-    case 'integer':
+    },
+    'integer': (data, option) => {
       data.addIntegerOption(o => {
         o
           .setName(option.name)
@@ -230,15 +230,15 @@ function buildOption (data, option) {
         if (option.max) o.setMaxValue(option.max)
         return o
       })
-      break
-    case 'mentionable':
+    },
+    'mentionable': (data, option) => {
       data.addMentionableOption(o =>
         o
           .setName(option.name)
           .setDescription(option.description)
           .setRequired(option.required ?? false))
-      break
-    case 'number':
+    },
+    'number': (data, option) => {
       data.addNumberOption(o => {
         o
           .setName(option.name)
@@ -250,15 +250,15 @@ function buildOption (data, option) {
         if (option.max) o.setMaxValue(option.max)
         return o
       })
-      break
-    case 'role':
+    },
+    'role': (data, option) => {
       data.addRoleOption(o =>
         o
           .setName(option.name)
           .setDescription(option.description)
           .setRequired(option.required ?? false))
-      break
-    case 'string':
+    },
+    'string': (data, option) => {
       data.addStringOption(o => {
         o
           .setName(option.name)
@@ -270,21 +270,23 @@ function buildOption (data, option) {
         if (option.max) o.setMaxLength(option.max)
         return o
       })
-      break
-    case 'user':
+    },
+    'subcommand': (data, option) => {
+      data.addSubcommand(sub => buildSubcommand(sub, option))
+    },
+    'subcommand-group': (data, option) => {
+      data.addSubcommandGroup(group => buildSubcommandGroup(group, option))
+    },
+    'user': (data, option) => {
       data.addUserOption(o =>
         o
           .setName(option.name)
           .setDescription(option.description)
           .setRequired(option.required ?? false))
-      break
-    case 'subcommand':
-      data.addSubcommand(sub => buildSubcommand(sub, option))
-      break
-    case 'subcommand-group':
-      data.addSubcommandGroup(group => buildSubcommandGroup(group, option))
-      break
-    default:
-      throw new Error(`[hiei:setup] Unknown option type ${option.type} in command ${data.name}`)
+    }
   }
+
+  const builder = optionBuilders[option.type]
+  if (!builder) throw new Error(`[hiei:setup] Unknown option type ${option.type} in command ${data.name}`)
+  builder(data, option)
 }
