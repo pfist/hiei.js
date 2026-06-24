@@ -129,36 +129,25 @@ export async function buildSelectComponent (component) {
   if (!component.id) throw new Error('[hiei:setup] Select menu must have an id')
   if (!Array.isArray(component.options) || component.options.length === 0) throw new Error('[hiei:setup] Select menu must have at least one option')
 
-  let data
-
-  switch (component.type) {
-    case 'user':
-      data = new UserSelectMenuBuilder()
-      break
-    case 'channel':
-      data = new ChannelSelectMenuBuilder()
-      break
-    case 'role':
-      data = new RoleSelectMenuBuilder()
-      break
-    case 'mentionable':
-      data = new MentionableSelectMenuBuilder()
-      break
-    case 'string':
-      data = new StringSelectMenuBuilder()
-      break
-    default:
-      throw new Error('[hiei:setup] Select menu must have a type of string, user, channel, role, or mentionable.')
+  const selectBuilders = {
+    'user': new UserSelectMenuBuilder(),
+    'channel': new ChannelSelectMenuBuilder(),
+    'role': new RoleSelectMenuBuilder(),
+    'mentionable': new MentionableSelectMenuBuilder(),
+    'string': new StringSelectMenuBuilder()
   }
 
-  data.setCustomId(component.id)
+  const select = selectBuilders[component.type]
+  if (!select) throw new Error('[hiei:setup] Select menu must have a type of string, user, channel, role, or mentionable.')
 
-  if (component.placeholder) data.setPlaceholder(component.placeholder)
-  if (component.min !== undefined) data.setMinValues(component.minValues)
-  if (component.max !== undefined) data.setMaxValues(component.maxValues)
-  if (component.disabled !== undefined) data.setDisabled(component.disabled)
-  if (data instanceof StringSelectMenuBuilder && Array.isArray(component.options)) {
-    data.addOptions(
+  select.setCustomId(component.id)
+
+  if (component.placeholder) select.setPlaceholder(component.placeholder)
+  if (component.min !== undefined) select.setMinValues(component.minValues)
+  if (component.max !== undefined) select.setMaxValues(component.maxValues)
+  if (component.disabled !== undefined) select.setDisabled(component.disabled)
+  if (select instanceof StringSelectMenuBuilder && Array.isArray(component.options)) {
+    select.addOptions(
       component.options.map(o =>
         new StringSelectMenuOptionBuilder()
           .setLabel(o.label)
@@ -170,7 +159,7 @@ export async function buildSelectComponent (component) {
     )
   }
 
-  return data
+  return select
 }
 
 function buildSubcommand (subcommand, option) {
