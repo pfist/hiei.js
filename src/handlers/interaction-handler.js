@@ -1,44 +1,60 @@
-import { existsSync } from 'node:fs'
+import { statSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { pathToFileURL } from 'node:url'
+import { isDeepStrictEqual } from 'node:util'
 import { Collection, REST } from 'discord.js'
 import { discoverFiles } from '../utilities/file-util.js'
 import * as util from '../utilities/interaction-util.js'
 import * as log from '../utilities/log-util.js'
 import { dispatch, Events } from './dispatch.js'
 
-export async function createInteractionHandler (client, {
-  commandDirectory = './src/commands',
-  componentDirectory = './src/components',
-  debug = false
-}) {
+export async function createInteractionHandler (client, config) {
   const commands = new Collection()
-  const components = new Collection()
-
-  const commandsPath = resolve(process.cwd(), commandDirectory)
-  const commandsPathRelative = commandsPath.startsWith(process.cwd()) ? `.${commandsPath.slice(process.cwd().length)}` : commandsPath
-  const componentsPath = resolve(process.cwd(), componentDirectory)
-  const componentsPathRelative = componentsPath.startsWith(process.cwd()) ? `.${componentsPath.slice(process.cwd().length)}` : componentsPath
-
-  if (!existsSync(commandsPath)) {
-    log.error('setup', `There is no commands directory. Please create one at ${commandsPathRelative} or define a custom path in your interaction handler.`)
-    process.exit(1)
-  }
-
-  const componentsEnabled = existsSync(componentsPath)
-
-  if (!componentsEnabled) {
-    log.warn('setup', 'There is no components directory. Components will be disabled.')
-  }
+  const buttons = new Collection()
+  const modals = new Collection()
+  const selects = new Collection()
+  const commandsPath = resolve(config.commandsDirectory)
+  const buttonsPath = config.buttonsDirectory ? resolve(config.buttonsDirectory) : null
+  const modalsPath = config.modalsDirectory ? resolve(config.modalsDirectory) : null
+  const selectsPath = config.selectsDirectory ? resolve(config.selectsDirectory) : null
 
   client.once('clientReady', async () => {
-    await loadCommands(commandsPath)
-
-    if (componentsEnabled) {
-      await loadComponents(componentsPath)
+    // Load commands
+    if (!statSync(commandsPath).isDirectory()) {
+      throw new Error(`[hiei] Commands directory ${commandsPath.slice(process.cwd().length)} not found.`)
     }
 
-    await syncCommands()
+    await loadCommands(commandsPath)
+
+    // Load buttons
+    if (buttonsPath) {
+      if (!statSync(buttonsPath).isDirectory()) {
+        log.warn(`Buttons directory ${buttonsPath.slice(process.cwd().length)} not found.`)
+      }
+
+      await loadButtons(buttonsPath)
+    }
+
+    // Load modals
+    if (modalsPath) {
+      if (!statSync(modalsPath).isDirectory()) {
+        log.warn(`Modals directory ${modalsPath.slice(process.cwd().length)} not found.`)
+      }
+
+      await loadModals(modalsPath)
+    }
+
+    // Load selects
+    if (selectsPath) {
+      if (!statSync(selectsPath).isDirectory()) {
+        log.warn(`Selects directory ${selectsPath.slice(process.cwd().length)} not found.`)
+      }
+
+      await loadSelects(selectsPath)
+    }
+
+    // Register commands
+    await registerCommands()
   })
 
   client.on('interactionCreate', handleInteraction)
@@ -46,7 +62,7 @@ export async function createInteractionHandler (client, {
   async function loadCommands (directory) {
     const files = await discoverFiles(directory)
     if (!files.length) {
-      return log.warn('setup', `Commands directory is empty: ${commandsPathRelative}`)
+      return log.warn(`Commands directory ${commandsPath.slice(process.cwd().length)} is empty.`)
     }
 
     for (const file of files) {
@@ -65,50 +81,85 @@ export async function createInteractionHandler (client, {
             data = await util.buildUserCommand(command)
             break
           default:
-            throw new Error(`[hiei:setup] Unknown command interaction type: ${command.interaction}`)
+            throw new Error(`[hiei] Unknown command interaction type: ${command.interaction}`)
         }
 
         commands.set(command.name, { ...command, data })
       } catch (error) {
-        log.error('setup', `Failed to load command: ${file}`, error)
+        log.error(`Failed to load command: ${file}`, error)
       }
     }
 
-    log.info('setup', `Loaded ${commands.size} ${commands.size === 1 ? 'command' : 'commands'} from ${commandsPathRelative}`)
+    log.info(`Loaded ${commands.size} ${commands.size === 1 ? 'command' : 'commands'} from ${commandsPath.slice(process.cwd().length)}`)
   }
 
-  async function loadComponents (directory) {
+  async function loadButtons (directory) {
     const files = await discoverFiles(directory)
     if (!files.length) {
-      return log.warn('setup', `Components directory is empty: ${componentsPathRelative}`)
+      return log.warn(`Buttons directory ${buttonsPath.slice(process.cwd().length)} is empty.`)
     }
 
     for (const file of files) {
       try {
-        const { default: component } = await import(pathToFileURL(file))
-        let data
+        const { default: button } = await import(pathToFileURL(file))
 
-        switch (component.interaction) {
-          case 'button':
-            data = await util.buildButtonComponent(component)
-            break
-          case 'modal':
-            data = await util.buildModalComponent(component)
-            break
-          case 'select':
-            data = await util.buildSelectComponent(component)
-            break
-          default:
-            throw new Error(`[hiei:setup] Unknown component interaction type ${component.interaction} in file ${file}`)
+        if (button.interaction === 'button') {
+          buttons.set(button)
+        } else {
+          throw new Error(`[hiei] Unknown button interaction type: ${button.interaction}`)
         }
-
-        components.set(`${component.interaction}:${component.id}`, { ...component, data })
       } catch (error) {
-        log.error('setup', `Failed to load component: ${file}`, error)
+        log.error(`Failed to load button: ${file}`, error)
       }
     }
 
-    log.info('setup', `Loaded ${components.size} ${components.size === 1 ? 'component' : 'components'} from ${componentsPathRelative}`)
+    log.info(`Loaded ${buttons.size} ${buttons.size === 1 ? 'button' : 'buttons'} from ${buttonsPath.slice(process.cwd().length)}`)
+  }
+
+  async function loadModals (directory) {
+    const files = await discoverFiles(directory)
+    if (!files.length) {
+      return log.warn(`Modals directory ${modalsPath.slice(process.cwd().length)} is empty.`)
+    }
+
+    for (const file of files) {
+      try {
+        const { default: modal } = await import(pathToFileURL(file))
+
+        if (modal.interaction === 'modal') {
+          modals.set(modal)
+        } else {
+          throw new Error(`[hiei] Unknown modal interaction type: ${modal.interaction}`)
+        }
+      } catch (error) {
+        log.error(`Failed to load modal: ${file}`, error)
+      }
+    }
+
+    log.info(`Loaded ${modals.size} ${modals.size === 1 ? 'modal' : 'modals'} from ${modalsPath.slice(process.cwd().length)}`)
+  }
+
+  async function loadSelects (directory) {
+    const files = await discoverFiles(directory)
+    if (!files.length) {
+      return log.warn(`Selects directory ${selectsPath.slice(process.cwd().length)} is empty.`)
+    }
+
+    for (const file of files) {
+      try {
+        const { default: select } = await import(pathToFileURL(file))
+
+        if (select.interaction.startsWith('select')) {
+          selects.set(select)
+        } else {
+          throw new Error(`[hiei] Unknown select interaction type: ${select.interaction}`)
+        }
+      } catch (error) {
+        log.error(`Failed to load select: ${file}`, error)
+      }
+    }
+
+    log.info(`Loaded ${selects.size} ${selects.size === 1 ? 'select' : 'selects'} from ${selectsPath.slice(process.cwd().length)}`)
   }
 
   async function handleInteraction (interaction) {
@@ -116,12 +167,12 @@ export async function createInteractionHandler (client, {
     if (interaction.isAutocomplete()) {
       const command = commands.get(interaction.commandName)
       if (!command) {
-        log.warn('interactions', `Command "${interaction.commandName}" not found.`)
+        log.warn(`Command '${interaction.commandName}' sent autocomplete interaction but has no handler.`)
         return
       }
 
       if (typeof command.autocomplete !== 'function') {
-        log.warn('interactions', `Autocomplete interaction received for command "${interaction.commandName}" but no autocomplete() method is defined.`)
+        log.warn(`Autocomplete interaction received for command '${interaction.commandName}' but no autocomplete() method is defined.`)
         return
       }
 
@@ -131,7 +182,7 @@ export async function createInteractionHandler (client, {
         await interaction.respond(choices)
         dispatch.emit(Events.Interaction.Completed, interaction)
       } catch (error) {
-        log.error('interactions', `Autocomplete for command "${interaction.commandName}" encountered an error:`, error)
+        log.error(`Autocomplete for command '${interaction.commandName}' encountered an error:`, error)
         dispatch.emit(Events.Interaction.Failed, {
           interaction,
           error
@@ -143,12 +194,12 @@ export async function createInteractionHandler (client, {
     if (interaction.isChatInputCommand()) {
       const command = commands.get(interaction.commandName)
       if (!command) {
-        log.warn('interactions', `Slash command "${interaction.commandName}" not found.`)
+        log.warn(`Slash command '${interaction.commandName}' has no handler.`)
         return
       }
 
       if (typeof command.execute !== 'function') {
-        log.warn('interactions', `Slash command "${interaction.commandName}" has no execute() method.`)
+        log.warn(`Slash command '${interaction.commandName}' has no execute() method.`)
         return
       }
 
@@ -157,7 +208,7 @@ export async function createInteractionHandler (client, {
         await command.execute({ interaction, client, components })
         dispatch.emit(Events.Interaction.Completed, interaction)
       } catch (error) {
-        log.error('interactions', `Error executing slash command "${interaction.commandName}":`, error)
+        log.error(`Slash command '${interaction.commandName}' failed to execute`, error)
         dispatch.emit(Events.Interaction.Failed, {
           interaction,
           error
@@ -169,12 +220,12 @@ export async function createInteractionHandler (client, {
     if (interaction.isMessageContextMenuCommand()) {
       const command = commands.get(interaction.commandName)
       if (!command) {
-        log.warn('interactions', `Message command "${interaction.commandName}" not found.`)
+        log.warn(`Message command '${interaction.commandName}' has no handler.`)
         return
       }
 
       if (typeof command.execute !== 'function') {
-        log.warn('interactions', `Message command "${interaction.commandName}" has no execute() method.`)
+        log.warn(`Message command '${interaction.commandName}' has no execute() method.`)
         return
       }
 
@@ -184,7 +235,7 @@ export async function createInteractionHandler (client, {
         await command.execute({ interaction, message, client, components })
         dispatch.emit(Events.Interaction.Completed, interaction)
       } catch (error) {
-        log.error('interactions', `Error executing message command "${interaction.commandName}":`, error)
+        log.error(`Message command '${interaction.commandName}' failed to execute`, error)
         dispatch.emit(Events.Interaction.Failed, {
           interaction,
           error
@@ -196,12 +247,12 @@ export async function createInteractionHandler (client, {
     if (interaction.isUserContextMenuCommand()) {
       const command = commands.get(interaction.commandName)
       if (!command) {
-        log.warn('interactions', `User command "${interaction.commandName}" not found.`)
+        log.warn(`User command '${interaction.commandName}' has no handler.`)
         return
       }
 
       if (typeof command.execute !== 'function') {
-        log.warn('interactions', `User command "${interaction.commandName}" has no execute() method.`)
+        log.warn(`User command '${interaction.commandName}' has no execute() method.`)
         return
       }
 
@@ -211,7 +262,7 @@ export async function createInteractionHandler (client, {
         await command.execute({ interaction, user, client, components })
         dispatch.emit(Events.Interaction.Completed, interaction)
       } catch (error) {
-        log.error('interactions', `Error executing user command "${interaction.commandName}":`, error)
+        log.error(`User command '${interaction.commandName}' failed to execute`, error)
         dispatch.emit(Events.Interaction.Failed, {
           interaction,
           error
@@ -219,25 +270,25 @@ export async function createInteractionHandler (client, {
       }
     }
 
-    // Button component
+    // Button
     if (interaction.isButton()) {
-      const component = components.get(`button:${interaction.customId}`)
-      if (!component) {
-        log.warn('interactions', `Button component "${interaction.customId}" not found. This warning can be safely ignored for contextual buttons.`)
+      const button = buttons.get(interaction.customId)
+      if (!button) {
+        log.warn(`Button '${interaction.customId}' has no handler.`)
         return
       }
 
-      if (typeof component.execute !== 'function') {
-        log.warn('interactions', `Button component "${interaction.customId}" has no execute() method.`)
+      if (typeof button.execute !== 'function') {
+        log.warn(`Button '${interaction.customId}' has no execute() method.`)
         return
       }
 
       try {
         dispatch.emit(Events.Interaction.Started, interaction)
-        await component.execute({ interaction, client })
+        await button.execute(interaction, client)
         dispatch.emit(Events.Interaction.Completed, interaction)
       } catch (error) {
-        log.error('interactions', `Error executing button component "${interaction.customId}":`, error)
+        log.error(`Button '${interaction.customId}' failed to execute`, error)
         dispatch.emit(Events.Interaction.Failed, {
           interaction,
           error
@@ -245,25 +296,25 @@ export async function createInteractionHandler (client, {
       }
     }
 
-    // Select menu component
+    // Select menu
     if (interaction.isAnySelectMenu()) {
-      const component = components.get(`select:${interaction.customId}`)
-      if (!component) {
-        log.warn('interactions', `Select menu component "${interaction.customId}" not found. This warning can be safely ignored for contextual select menus.`)
+      const select = selects.get(interaction.customId)
+      if (!select) {
+        log.warn(`Select menu '${interaction.customId}' has no handler.`)
         return
       }
 
-      if (typeof component.execute !== 'function') {
-        log.warn('interactions', `Select menu component "${interaction.customId}" has no execute() method.`)
+      if (typeof select.execute !== 'function') {
+        log.warn(`Select menu '${interaction.customId}' has no execute() method.`)
         return
       }
 
       try {
         dispatch.emit(Events.Interaction.Started, interaction)
-        await component.execute({ interaction, client })
+        await select.execute(interaction, client)
         dispatch.emit(Events.Interaction.Completed, interaction)
       } catch (error) {
-        log.error('interactions', `Error executing select menu component "${interaction.customId}":`, error)
+        log.error(`Select menu '${interaction.customId}' failed to execute`, error)
         dispatch.emit(Events.Interaction.Failed, {
           interaction,
           error
@@ -271,25 +322,25 @@ export async function createInteractionHandler (client, {
       }
     }
 
-    // Modal component
+    // Modal submission
     if (interaction.isModalSubmit()) {
-      const component = components.get(`modal:${interaction.customId}`)
-      if (!component) {
-        log.warn('interactions', `Modal component "${interaction.customId}" not found. This warning can be safely ignored for contextual modals.`)
+      const modal = modals.get(interaction.customId)
+      if (!modal) {
+        log.warn(`Modal submission '${interaction.customId}' has no handler.`)
         return
       }
 
-      if (typeof component.execute !== 'function') {
-        log.warn('interactions', `Modal component "${interaction.customId}" has no execute() method.`)
+      if (typeof modal.execute !== 'function') {
+        log.warn(`Modal submission '${interaction.customId}' has no execute() method.`)
         return
       }
 
       try {
         dispatch.emit(Events.Interaction.Started, interaction)
-        await component.execute({ interaction, client })
+        await modal.execute(interaction, client)
         dispatch.emit(Events.Interaction.Completed, interaction)
       } catch (error) {
-        log.error('interactions', `Error executing modal component "${interaction.customId}":`, error)
+        log.error(`Modal submission '${interaction.customId}' failed to execute`, error)
         dispatch.emit(Events.Interaction.Failed, {
           interaction,
           error
@@ -298,7 +349,7 @@ export async function createInteractionHandler (client, {
     }
   }
 
-  function normalizeCommand (command) {
+  async function normalizeCommand (command) {
     const normalized = {
       type: command.type !== undefined ? command.type : 1,
       name: command.name,
@@ -310,7 +361,7 @@ export async function createInteractionHandler (client, {
     return normalized
   }
 
-  async function syncCommands () {
+  async function registerCommands () {
     const rest = new REST({ version: '10' }).setToken(client.token)
     const application = client.application.id
     const guild = process.env.GUILD
@@ -325,33 +376,33 @@ export async function createInteractionHandler (client, {
     try {
       remoteCommands = await rest.get(`/applications/${application}/guilds/${guild}/commands`)
     } catch (error) {
-      log.error('sync', 'Failed to fetch remote commands.', error)
+      log.error('Failed to fetch remote commands.', error)
     }
 
     const localMap = new Map(localCommands.map(cmd => [cmd.name, normalizeCommand(cmd)]).sort())
     const remoteMap = new Map(remoteCommands.map(cmd => [cmd.name, normalizeCommand(cmd)]).sort())
 
-    const needsUpdate = !Bun.deepEquals(localMap, remoteMap)
+    const needsUpdate = !isDeepStrictEqual(localMap, remoteMap)
 
-    if (debug) {
-      console.debug('[hiei:debug] Compare local and remote command data below if sync is misbehaving')
+    if (config.debug) {
+      console.debug('[DEBUG] Compare local and remote command data below if sync is misbehaving')
       console.debug('Local:', JSON.stringify(Object.fromEntries(localMap), null, 2))
       console.debug('Remote:', JSON.stringify(Object.fromEntries(remoteMap), null, 2))
     }
 
     // Check for modified command data
-    log.info('sync', 'Checking for changes in command data...')
+    log.info('Checking for changes in command data...')
     if (needsUpdate) {
       try {
-        log.info('sync', 'Changes found. Updating guild commands...')
+        log.info('Changes found. Updating guild commands...')
         await rest.put(`/applications/${application}/guilds/${guild}/commands`, { body: localCommands })
-        log.info('sync', 'Guild commands updated successfully.')
+        log.info('Guild commands updated successfully.')
         dispatch.emit(Events.Sync.Completed, {
           guild: guild.id,
           remote: remoteCommands
         })
       } catch (error) {
-        log.error('sync', 'Failed to sync commands.', error)
+        log.error('Failed to sync commands.', error)
         dispatch.emit(Events.Sync.Failed, {
           guild: guild.id,
           local: localCommands,
@@ -360,7 +411,7 @@ export async function createInteractionHandler (client, {
         })
       }
     } else {
-      log.info('sync', 'No changes found.')
+      log.info('No changes found.')
     }
   }
 }

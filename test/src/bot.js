@@ -1,5 +1,5 @@
 import { Client, GatewayIntentBits } from 'discord.js'
-import { createInteractionHandler, createEventHandler } from '../../src/hiei.js'
+import { createEventHandler, createInteractionHandler } from '../../src/hiei.js'
 
 const client = new Client({
   intents: [
@@ -10,8 +10,7 @@ const client = new Client({
 })
 
 createInteractionHandler(client, {
-  commandDirectory: './test/src/commands',
-  componentDirectory: './test/src/components'
+  commandsDirectory: './test/src/interactions/commands'
 })
 
 createEventHandler(client, {
