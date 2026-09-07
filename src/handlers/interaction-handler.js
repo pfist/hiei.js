@@ -205,7 +205,7 @@ export async function createInteractionHandler (client, config) {
 
       try {
         dispatch.emit(Events.Interaction.Started, interaction)
-        await command.execute({ interaction, client, components })
+        await command.execute(interaction, client)
         dispatch.emit(Events.Interaction.Completed, interaction)
       } catch (error) {
         log.error(`Slash command '${interaction.commandName}' failed to execute`, error)
@@ -232,7 +232,7 @@ export async function createInteractionHandler (client, config) {
       try {
         const message = interaction.options.getMessage('message')
         dispatch.emit(Events.Interaction.Started, interaction)
-        await command.execute({ interaction, message, client, components })
+        await command.execute(interaction, message, client)
         dispatch.emit(Events.Interaction.Completed, interaction)
       } catch (error) {
         log.error(`Message command '${interaction.commandName}' failed to execute`, error)
@@ -259,7 +259,7 @@ export async function createInteractionHandler (client, config) {
       try {
         const user = interaction.options.getUser('user')
         dispatch.emit(Events.Interaction.Started, interaction)
-        await command.execute({ interaction, user, client, components })
+        await command.execute(interaction, user, client)
         dispatch.emit(Events.Interaction.Completed, interaction)
       } catch (error) {
         log.error(`User command '${interaction.commandName}' failed to execute`, error)
@@ -349,23 +349,41 @@ export async function createInteractionHandler (client, config) {
     }
   }
 
-  async function normalizeCommand (command) {
+  function normalizeCommand (command) {
     const normalized = {
       type: command.type !== undefined ? command.type : 1,
       name: command.name,
-      description: command.description ? command.description : '',
-      defaultMemberPermissions: command.permissions
+      description: command.description ?? '',
+      default_member_permissions: command.default_member_permissions
     }
 
-    if (command.options !== undefined && command.options.length > 0) normalized.options = command.options
+    if (command.options) {
+      normalized.options = normalizeOptions(command.options)
+    } else {
+      normalized.options = []
+    }
+
     return normalized
+  }
+
+  function normalizeOptions(options) {
+    const normalized = options.map((o) => {
+      const result = Object.fromEntries(
+        Object.entries(o).filter(([_key, value]) => value != null)
+      )
+      if (result.options) result.options = normalizeOptions(result.options)
+      if (result.choices) result.choices = normalizeOptions(result.choices)
+      return result
+    })
+
+    return normalized.sort((a, b) => a.name.localeCompare(b.name))
   }
 
   async function registerCommands () {
     const rest = new REST({ version: '10' }).setToken(client.token)
     const application = client.application.id
     const guild = process.env.GUILD
-    const localCommands = Array.from(commands.values()).map(cmd => cmd.data.toJSON())
+    const localCommands = Array.from(commands.values()).map(cmd => normalizeCommand(cmd.data.toJSON()))
     let remoteCommands
 
     dispatch.emit(Events.Sync.Started, {
@@ -379,39 +397,47 @@ export async function createInteractionHandler (client, config) {
       log.error('Failed to fetch remote commands.', error)
     }
 
-    const localMap = new Map(localCommands.map(cmd => [cmd.name, normalizeCommand(cmd)]).sort())
-    const remoteMap = new Map(remoteCommands.map(cmd => [cmd.name, normalizeCommand(cmd)]).sort())
+    try {
+      log.info('Checking command data for changes...')
+      let created = 0
+      let updated = 0
+      let skipped = 0
 
-    const needsUpdate = !isDeepStrictEqual(localMap, remoteMap)
+      for (const command of localCommands) {
+        const remoteCommand = remoteCommands.find(e => e.name === command.name)
+        const commandType = {
+          '1': 'slash',
+          '2': 'user',
+          '3': 'message'
+        }
 
-    if (config.debug) {
-      console.debug('[DEBUG] Compare local and remote command data below if sync is misbehaving')
-      console.debug('Local:', JSON.stringify(Object.fromEntries(localMap), null, 2))
-      console.debug('Remote:', JSON.stringify(Object.fromEntries(remoteMap), null, 2))
-    }
-
-    // Check for modified command data
-    log.info('Checking for changes in command data...')
-    if (needsUpdate) {
-      try {
-        log.info('Changes found. Updating guild commands...')
-        await rest.put(`/applications/${application}/guilds/${guild}/commands`, { body: localCommands })
-        log.info('Guild commands updated successfully.')
-        dispatch.emit(Events.Sync.Completed, {
-          guild: guild.id,
-          remote: remoteCommands
-        })
-      } catch (error) {
-        log.error('Failed to sync commands.', error)
-        dispatch.emit(Events.Sync.Failed, {
-          guild: guild.id,
-          local: localCommands,
-          remote: remoteCommands,
-          error
-        })
+        if (!remoteCommand) {
+          await rest.post(`/applications/${application}/guilds/${guild}/commands`, { body: command })
+          log.info(`Registered ${commandType[command.type]} command "${command.name}"`)
+          created++
+        } else if (!isDeepStrictEqual(command, normalizeCommand(remoteCommand), true)) {
+          await rest.patch(`/applications/${application}/guilds/${guild}/commands/${remoteCommand.id}`, { body: command })
+          log.info(`Updated ${commandType[command.type]} command "${command.name}"`)
+          updated++
+        } else {
+          log.info(`Skipped ${commandType[command.type]} command "${command.name}" (no change)`)
+          skipped++
+        }
       }
-    } else {
-      log.info('No changes found.')
+
+      log.info(`Done. ${created} new, ${updated} updated, ${skipped} unchanged`)
+      dispatch.emit(Events.Sync.Completed, {
+        guild: guild.id,
+        remote: remoteCommands
+      })
+    } catch (error) {
+      log.error('Failed to sync commands.', error)
+      dispatch.emit(Events.Sync.Failed, {
+        guild: guild.id,
+        local: localCommands,
+        remote: remoteCommands,
+        error
+      })
     }
   }
 }

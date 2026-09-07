@@ -10,11 +10,12 @@ const client = new Client({
 })
 
 createInteractionHandler(client, {
-  commandsDirectory: './test/src/interactions/commands'
+  commandsDirectory: './test/src/interactions/commands',
+  debug: true
 })
 
 createEventHandler(client, {
-  eventDirectory: './test/src/events'
+  eventsDirectory: './test/src/events'
 })
 
 client.login(process.env.TOKEN)
