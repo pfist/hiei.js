@@ -4,8 +4,7 @@ export default {
   interaction: 'message',
   name: 'Report Message',
   permissions: PermissionFlagsBits.SendMessages,
-  async execute ({ interaction, message, components }) {
-    const modal = components.get('modal:reportMessage').data
-    await interaction.showModal(modal)
+  async execute (interaction, message) {
+    interaction.reply({ content: `Reported message: ${message.content}` })
   }
 }

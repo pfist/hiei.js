@@ -5,7 +5,7 @@ export default {
   name: 'ping',
   description: 'Play ping pong with the bot',
   permissions: PermissionFlagsBits.SendMessages,
-  async execute ({ interaction }) {
+  async execute (interaction) {
     await interaction.reply({ content: ':ping_pong: Pong!', flags: MessageFlags.Ephemeral })
   }
 }

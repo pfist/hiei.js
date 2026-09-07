@@ -46,7 +46,7 @@ export default {
     const filtered = choices.filter((choice) => choice.name.toLowerCase().startsWith(focusedValue))
     return filtered.map((choice) => ({ name: choice.name, value: choice.value }))
   },
-  async execute({ interaction }) {
+  async execute(interaction) {
     const free = interaction.options.getString('free')
     const strict = interaction.options.getString('strict')
     const personality = interaction.options.getString('personality')

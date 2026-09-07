@@ -40,7 +40,7 @@ export default {
     const filtered = choices.filter((choice) => choice.name.toLowerCase().startsWith(focusedValue))
     return filtered.map((choice) => ({ name: choice.name, value: choice.value }))
   },
-  async execute({ interaction }) {
+  async execute(interaction) {
     const base = interaction.options.getNumber('base')
     const multiplier = interaction.options.getNumber('multiplier')
 

@@ -18,8 +18,8 @@ export default {
   		required: true
     }
   ],
-  permissions: PermissionFlagsBits.SendMessages,
-  async execute({ interaction }) {
+  permissions: PermissionFlagsBits.BanMembers,
+  async execute(interaction) {
     const screenshot = interaction.options.getAttachment('screenshot')
     const spoiler = interaction.options.getBoolean('spoiler')
 

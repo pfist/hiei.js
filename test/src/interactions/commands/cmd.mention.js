@@ -66,7 +66,7 @@ export default {
       ]
     }
   ],
-  async execute({ interaction }) {
+  async execute(interaction) {
     switch (interaction.options.getSubcommand()) {
       case 'user': {
         const user = interaction.options.getUser('user')

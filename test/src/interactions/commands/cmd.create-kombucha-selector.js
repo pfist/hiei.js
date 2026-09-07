@@ -14,7 +14,7 @@ export default {
   name: 'kombucha',
   description: 'Create a kombucha selector',
   permissions: PermissionFlagsBits.SendMessages,
-  async execute ({ interaction, components }) {
+  async execute (interaction) {
     const selector = new StringSelectMenuBuilder()
       .setCustomId('kombucha-selector')
       .addOptions(

@@ -5,7 +5,7 @@ export default {
   name: 'tea',
   description: 'Create a tea selector',
   permissions: PermissionFlagsBits.SendMessages,
-  async execute ({ interaction, components }) {
+  async execute (interaction) {
     const selector = components.get('select:tea-selector').data
     const button = components.get('button:submit-feedback').data
     await interaction.reply({

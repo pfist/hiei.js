@@ -15,7 +15,7 @@ export default {
     }
   ],
   permissions: PermissionFlagsBits.SendMessages,
-  async execute({ interaction }) {
+  async execute(interaction) {
     const num = interaction.options.getNumber('num')
 
     await interaction.reply({
