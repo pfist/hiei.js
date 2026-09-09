@@ -127,7 +127,7 @@ export async function createInteractionHandler (client, config) {
         const { default: modal } = await import(pathToFileURL(file))
 
         if (modal.interaction === 'modal') {
-          modals.set(modal)
+          modals.set(modal.id, { ...modal })
         } else {
           throw new Error(`[hiei] Unknown modal interaction type: ${modal.interaction}`)
         }
