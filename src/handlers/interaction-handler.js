@@ -104,7 +104,7 @@ export async function createInteractionHandler (client, config) {
         const { default: button } = await import(pathToFileURL(file))
 
         if (button.interaction === 'button') {
-          buttons.set(button)
+          buttons.set(button.id, { ...button })
         } else {
           throw new Error(`[hiei] Unknown button interaction type: ${button.interaction}`)
         }
@@ -272,14 +272,16 @@ export async function createInteractionHandler (client, config) {
 
     // Button
     if (interaction.isButton()) {
-      const button = buttons.get(interaction.customId)
+      const customId = interaction.customId.split(':')[0]
+      const button = buttons.get(customId)
+      log.info(button)
       if (!button) {
-        log.warn(`Button '${interaction.customId}' has no handler.`)
+        log.warn(`Button '${customId}' has no handler.`)
         return
       }
 
       if (typeof button.execute !== 'function') {
-        log.warn(`Button '${interaction.customId}' has no execute() method.`)
+        log.warn(`Button '${customId}' has no execute() method.`)
         return
       }
 
@@ -288,7 +290,7 @@ export async function createInteractionHandler (client, config) {
         await button.execute(interaction, client)
         dispatch.emit(Events.Interaction.Completed, interaction)
       } catch (error) {
-        log.error(`Button '${interaction.customId}' failed to execute`, error)
+        log.error(`Button '${customId}' failed to execute`, error)
         dispatch.emit(Events.Interaction.Failed, {
           interaction,
           error

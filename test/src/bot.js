@@ -11,7 +11,7 @@ const client = new Client({
 
 createInteractionHandler(client, {
   commandsDirectory: './test/src/interactions/commands',
-  debug: true
+  buttonsDirectory: './test/src/interactions/buttons'
 })
 
 createEventHandler(client, {
