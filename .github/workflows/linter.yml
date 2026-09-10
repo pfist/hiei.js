@@ -8,12 +8,10 @@ on:
 
 jobs:
   lint:
-    name: 'Lint code with Standard'
+    name: 'Lint code with Biome'
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
-    - uses: oven-sh/setup-bun@v2
-      with:
-        bun-version: 1.3.14
-    - run: bun ci
-    - run: bun run lint
+    - uses: nubjs/setup-nub@v0
+    - run: nub install
+    - run: nub run lint
