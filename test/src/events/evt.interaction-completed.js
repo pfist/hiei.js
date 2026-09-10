@@ -6,6 +6,6 @@ export default {
     const end = Date.now()
     const elapsedMilliseconds = end - start
     const elapsedSeconds = (elapsedMilliseconds / 1000).toFixed(2)
-    console.log(`[hiei:events] Interaction ${interaction.commandName} completed successfully in ${elapsedSeconds}s.`)
+    console.log(`[hiei:events] Interaction ${interaction.commandName || interaction.customId} completed successfully in ${elapsedSeconds}s.`)
   }
 }
