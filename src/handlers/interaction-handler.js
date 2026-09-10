@@ -150,7 +150,7 @@ export async function createInteractionHandler (client, config) {
         const { default: select } = await import(pathToFileURL(file))
 
         if (select.interaction.startsWith('select')) {
-          selects.set(select)
+          selects.set(select.id, { ...select })
         } else {
           throw new Error(`[hiei] Unknown select interaction type: ${select.interaction}`)
         }

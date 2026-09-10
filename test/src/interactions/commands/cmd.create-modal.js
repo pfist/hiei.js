@@ -1,4 +1,4 @@
-import { LabelBuilder, ModalBuilder, PermissionFlagsBits, TextDisplayBuilder, TextInputBuilder, TextInputStyle } from "discord.js"
+import { LabelBuilder, ModalBuilder, PermissionFlagsBits, TextDisplayBuilder, TextInputBuilder, TextInputStyle, UserSelectMenuBuilder } from "discord.js"
 
 export default {
   interaction: 'slash',
@@ -36,9 +36,19 @@ export default {
       .setDescription('Add any additional context that may help the moderation team.')
       .setTextInputComponent(noteInput)
 
+    // select menu
+    const userInput = new UserSelectMenuBuilder()
+      .setCustomId('report-user-target')
+      .setPlaceholder('Select a user')
+
+    const userLabel = new LabelBuilder()
+      .setLabel('User')
+      .setDescription('The user you would like to report.')
+      .setUserSelectMenuComponent(userInput)
+
     modal
       .addTextDisplayComponents(preamble)
-      .addLabelComponents(reason, noteLabel)
+      .addLabelComponents(userLabel, reason, noteLabel)
 
     await interaction.showModal(modal)
   }

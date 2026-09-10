@@ -6,9 +6,10 @@ export default {
   async execute (interaction) {
     const reason = interaction.fields.getRadioGroup('report-user-reason')
     const note = interaction.fields.getTextInputValue('report-user-note')
+    const target = interaction.fields.getSelectedMembers('report-user-target').first()
 
     await interaction.reply({
-      content: `You reported a user successfully. Reason given: ${reason}\nNotes: ${note}`,
+      content: `You successfully reported user ${target.displayName} with ID ${target.id}. Reason given: ${reason}\nNotes: ${note}`,
       flags: MessageFlags.Ephemeral
     })
   }
