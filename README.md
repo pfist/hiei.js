@@ -2,23 +2,22 @@
 A tiny framework for bespoke, single-guild bots powered by discord.js.
 
 ## Features
-- Embrace modern application commands and components
-- Create modular slash, message, and user commands with a simple, declarative syntax
-- Reusable static buttons, select menus, and modals
-- Guild commands only (global commands may be supported in the future)
+- Define commands with a simple, declarative syntax
+- Handle slash commands and context menu commands
+- Handle buttons, select menus, and modal submissions
 - Automatic command registration
+- Guild commands only (global commands may be supported in the future)
 - Simple and lightweight
-- Zero dependencies
 
 ## Installation
-hiei.js requires Bun 1.3.14 and discord.js 14.26.x.
+hiei.js requires Node.js 24.19.x and discord.js 14.27.x.
 
 ```
-bun add discord.js
-bun add hiei.js
+nub add discord.js
+nub add hiei.js@beta
 ```
 
 ## Links
-- [hiei.js docs](https://hiei.pages.dev)
+- hiei.js docs (Coming soon)
 - [discord.js docs](https://discord.js.org)
 - [discord.js guide](https://discordjs.guide)
